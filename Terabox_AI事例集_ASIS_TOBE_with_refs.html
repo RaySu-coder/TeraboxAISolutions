@@ -1,0 +1,2784 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テラボックス AIソリューション導入事例集 - AS-IS → TO-BE | Terabox Inc. テラボックス株式会社</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+JP:wght@100..900&family=Noto+Sans+SC:wght@100..900&display=swap');
+
+        html,
+        body {
+            font-family: 'Inter', 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+            background-color: #f8faff;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #presentation-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            min-height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            transition: opacity 0.4s ease-in-out;
+            /* Reserve space for the fixed bottom navigation (updated dynamically via JS).
+               Fallback keeps content usable even if JS doesn't run. */
+            padding-bottom: var(--slide-bottom-padding, 140px);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        /* 首页居中显示 */
+        header.slide.active {
+            justify-content: center;
+        }
+
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        .reveal-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        #navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            border-top: 1px solid #e5e7eb;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+
+        /* iOS safe-area support (no-op elsewhere) */
+        :root {
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        #progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .lang-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .lang-btn:not(.active):hover {
+            background: #e5e7eb;
+        }
+
+        .toc-link {
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            cursor: pointer;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .asis-box {
+            border: 2px solid #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .tobe-box {
+            border: 2px solid #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .arrow-box {
+            font-size: 3rem;
+            color: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Slide 14 alignment: match Slide 15's container padding (py-18 = 4.5rem)
+           so the first-line start height aligns with the References slide. */
+        .slide.s14 .max-w-6xl {
+            padding-top: 4.5rem !important;
+            /* match Slide 15 (py-18) */
+            padding-bottom: 4.5rem !important;
+            /* match Slide 15 (py-18) */
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .arrow-box {
+                transform: rotate(90deg);
+            }
+
+            .copyright-text {
+                font-size: 0.7rem;
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <div id="presentation-container">
+
+        <!-- Language Switcher (Hidden for now) -->
+        <div class="fixed top-4 right-4 z-50 flex gap-2 bg-white rounded-lg shadow-lg p-2" style="display: none;">
+            <button class="lang-btn active" data-lang="ja">日本語</button>
+            <button class="lang-btn" data-lang="en">English</button>
+            <button class="lang-btn" data-lang="zh">中文</button>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <header class="slide bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white">
+            <div class="max-w-6xl mx-auto px-6 py-20 text-center">
+                <div
+                    class="mb-8 inline-block border border-white/30 rounded-full px-6 py-2 bg-white/10 backdrop-blur-sm">
+                    <p class="text-sm md:text-base font-medium tracking-wide">
+                        <span class="font-bold">Terabox Inc. テラボックス株式会社</span>
+                    </p>
+                </div>
+
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-6" data-i18n="title">AIソリューション導入事例集</h1>
+                <p class="text-xl md:text-3xl font-light opacity-90" data-i18n="subtitle">AS-IS（現状課題）→ TO-BE（AI導入後）</p>
+                <p class="text-lg mt-8 opacity-80" data-i18n="tagline">2025年実績：12案件の変革実例</p>
+
+                <div class="mt-10 flex flex-wrap justify-center gap-3 text-sm">
+                    <span class="pill"><span data-i18n="meta-date-label">作成日</span>：<span
+                            data-i18n="meta-date">2026年1月7日</span></span>
+                    <span class="pill"><span data-i18n="meta-version-label">版</span>：<span
+                            data-i18n="meta-version">1.0</span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Slide 2: Table of Contents -->
+        <section class="slide bg-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600" data-i18n="toc-label">
+                    CONTENTS</p>
+                <h2 class="text-3xl md:text-5xl font-bold mt-2" data-i18n="toc-title">目次</h2>
+                <p class="mt-4 text-lg text-gray-600" data-i18n="toc-sub">番号をクリックすると、その章へ直接ジャンプできます。</p>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl border bg-slate-50">
+                        <h3 class="text-xl font-bold mb-4" data-i18n="toc-summary">概要</h3>
+                        <ol class="space-y-2 text-lg">
+                            <li><a class="toc-link" href="#" data-goto="2">導入実績サマリー</a></li>
+                            <li><a class="toc-link" href="#" data-goto="3">業界別成果マップ</a></li>
+                        </ol>
+                    </div>
+
+                    <div class="p-6 rounded-2xl border bg-slate-50">
+                        <h3 class="text-xl font-bold mb-4" data-i18n="toc-cases">事例（AS-IS → TO-BE）</h3>
+                        <ol class="space-y-2 text-lg">
+                            <li><a class="toc-link" href="#" data-goto="4">🏭 製造業：AI品質検査</a></li>
+                            <li><a class="toc-link" href="#" data-goto="5">🏭 製造業：データガバナンス</a></li>
+                            <li><a class="toc-link" href="#" data-goto="6">💼 金融：AIデューデリジェンス</a></li>
+                            <li><a class="toc-link" href="#" data-goto="7">💼 法務：AI契約審査</a></li>
+                            <li><a class="toc-link" href="#" data-goto="8">⚡ エネルギー：AI巡回検査</a></li>
+                            <li><a class="toc-link" href="#" data-goto="9">🚗 自動車：AI顧客対応</a></li>
+                            <li><a class="toc-link" href="#" data-goto="10">👥 人材：AI採用マッチング</a></li>
+                            <li><a class="toc-link" href="#" data-goto="11" data-i18n="toc-case-08">🛃
+                                    通関：CustPro（AI-OCR・HSコード）</a></li>
+                            <li><a class="toc-link" href="#" data-goto="12" data-i18n="toc-case-09">👥 人材：KADO
+                                    AI（スキル解析・マッチング）</a></li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 rounded-2xl bg-indigo-50 border border-indigo-100">
+                    <h3 class="text-xl font-bold" data-i18n="toc-note-title">操作方法</h3>
+                    <p class="mt-2 text-gray-700" data-i18n="toc-note">→ / ← キーまたはスペースで次/前のスライドへ移動できます</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Summary -->
+        <section class="slide bg-gradient-to-br from-white to-slate-50">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600" data-i18n="s3-label">SUMMARY
+                </p>
+                <h2 class="text-3xl md:text-5xl font-bold mt-2" data-i18n="s3-title">2025年 導入実績サマリー</h2>
+                <p class="mt-4 text-lg text-gray-600" data-i18n="s3-subtitle">12案件で実証された変革効果</p>
+
+                <div class="mt-10 grid lg:grid-cols-4 gap-6">
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                        <div class="text-4xl font-bold text-blue-600 reveal-item">12</div>
+                        <div class="text-sm text-gray-600 mt-2" data-i18n="s3-stat1">導入案件数</div>
+                    </div>
+                    <div
+                        class="p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100">
+                        <div class="text-4xl font-bold text-emerald-600 reveal-item">7</div>
+                        <div class="text-sm text-gray-600 mt-2" data-i18n="s3-stat2">対応業界</div>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
+                        <div class="text-4xl font-bold text-purple-600 reveal-item">2-6ヶ月</div>
+                        <div class="text-sm text-gray-600 mt-2" data-i18n="s3-stat3">平均導入期間</div>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100">
+                        <div class="text-4xl font-bold text-amber-600 reveal-item">99%</div>
+                        <div class="text-sm text-gray-600 mt-2" data-i18n="s3-stat4">最高精度達成</div>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-3 gap-6">
+                    <div class="p-6 rounded-2xl bg-emerald-50 border border-emerald-100">
+                        <div class="text-sm font-bold text-emerald-700" data-i18n="s3-benefit1-title">コスト削減効果</div>
+                        <ul class="mt-3 space-y-2 text-gray-800">
+                            <li class="reveal-item" data-i18n="s3-benefit1-item1">• 人件費：50-70%削減</li>
+                            <li class="reveal-item" data-i18n="s3-benefit1-item2">• 運用コスト：40-60%削減</li>
+                            <li class="reveal-item" data-i18n="s3-benefit1-item3">• 処理コスト：大幅削減</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-blue-50 border border-blue-100">
+                        <div class="text-sm font-bold text-blue-700" data-i18n="s3-benefit2-title">効率向上効果</div>
+                        <ul class="mt-3 space-y-2 text-gray-800">
+                            <li class="reveal-item" data-i18n="s3-benefit2-item1">• 処理速度：10-15倍高速化</li>
+                            <li class="reveal-item" data-i18n="s3-benefit2-item2">• 業務時間：70-90%短縮</li>
+                            <li class="reveal-item" data-i18n="s3-benefit2-item3">• 24時間稼働実現</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-purple-50 border border-purple-100">
+                        <div class="text-sm font-bold text-purple-700" data-i18n="s3-benefit3-title">品質向上効果</div>
+                        <ul class="mt-3 space-y-2 text-gray-800">
+                            <li class="reveal-item" data-i18n="s3-benefit3-item1">• 精度：90-99%達成</li>
+                            <li class="reveal-item" data-i18n="s3-benefit3-item2">• エラー：80-95%削減</li>
+                            <li class="reveal-item" data-i18n="s3-benefit3-item3">• 品質均一化：100%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Industry Map -->
+        <section class="slide bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-white">
+            <div class="max-w-6xl mx-auto px-6 pt-8 pb-16 w-full">
+                <p class="text-sm font-semibold uppercase tracking-widest text-blue-200" data-i18n="s4-label">INDUSTRY
+                    MAP</p>
+                <h2 class="text-3xl md:text-5xl font-bold mt-2" data-i18n="s4-title">業界別成果マップ</h2>
+                <p class="mt-4 text-lg opacity-90" data-i18n="s4-subtitle">コスト削減 × 効率向上で俯瞰</p>
+
+                <!-- 左右分栏布局 -->
+                <div class="mt-10 grid md:grid-cols-[2fr,1fr] gap-6">
+                    <!-- 左侧：矩阵图 -->
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/15">
+                        <h3 class="text-xl font-bold text-center mb-6">業界別成果マトリクス</h3>
+
+                        <!-- Matrix Grid -->
+                        <div class="relative" style="height: 400px;">
+                            <!-- Axes Labels -->
+                            <div
+                                class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 -rotate-90 text-sm font-semibold">
+                                効率向上 →
+                            </div>
+                            <div
+                                class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-10 text-sm font-semibold">
+                                → コスト削減率
+                            </div>
+
+                            <!-- Grid Background -->
+                            <div class="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1">
+                                <div
+                                    class="bg-blue-500/10 border border-blue-400/30 rounded-lg flex items-end justify-start p-4">
+                                    <span class="text-xs opacity-40">高効率<br />中削減</span>
+                                </div>
+                                <div
+                                    class="bg-green-500/10 border border-green-400/30 rounded-lg flex items-end justify-end p-4">
+                                    <span class="text-xs opacity-40">高効率<br />高削減</span>
+                                </div>
+                                <div
+                                    class="bg-purple-500/10 border border-purple-400/30 rounded-lg flex items-start justify-start p-4">
+                                    <span class="text-xs opacity-40">中効率<br />中削減</span>
+                                </div>
+                                <div
+                                    class="bg-amber-500/10 border border-amber-400/30 rounded-lg flex items-start justify-end p-4">
+                                    <span class="text-xs opacity-40">中効率<br />高削減</span>
+                                </div>
+                            </div>
+
+                            <!-- Data Points with Labels -->
+                            <!-- 製造-品質検査 (右上 - 高効率×高削減) -->
+                            <div class="absolute reveal-item" style="left: 68%; top: 18%;">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-green-400 rounded-full shadow-lg"></div>
+                                    <div
+                                        class="bg-white/95 backdrop-blur text-gray-900 px-3 py-2 rounded-lg text-xs whitespace-nowrap shadow-lg">
+                                        <div class="font-bold">🏭 製造-品質検査</div>
+                                        <div class="text-gray-600">削減70% / 精度99%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- エネルギー-点検 (右上端 - 最高効率) -->
+                            <div class="absolute reveal-item" style="left: 75%; top: 8%;">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-green-400 rounded-full shadow-lg"></div>
+                                    <div
+                                        class="bg-white/95 backdrop-blur text-gray-900 px-3 py-2 rounded-lg text-xs whitespace-nowrap shadow-lg">
+                                        <div class="font-bold">⚡ エネルギー-点検</div>
+                                        <div class="text-gray-600">削減60% / 効率15倍</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 製造-データ統合 (左下) -->
+                            <div class="absolute reveal-item" style="left: 5%; top: 70%;">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-purple-400 rounded-full shadow-lg"></div>
+                                    <div
+                                        class="bg-white/95 backdrop-blur text-gray-900 px-3 py-2 rounded-lg text-xs whitespace-nowrap shadow-lg">
+                                        <div class="font-bold">🏭 製造-データ統合</div>
+                                        <div class="text-gray-600">削減50% / 統合100%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 金融-DD (左上) -->
+                            <div class="absolute reveal-item" style="left: 8%; top: 12%;">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-blue-400 rounded-full shadow-lg"></div>
+                                    <div
+                                        class="bg-white/95 backdrop-blur text-gray-900 px-3 py-2 rounded-lg text-xs whitespace-nowrap shadow-lg">
+                                        <div class="font-bold">💼 金融-DD</div>
+                                        <div class="text-gray-600">削減60% / 時短90%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 法務-契約 (右下寄り) -->
+                            <div class="absolute reveal-item" style="left: 55%; top: 58%;">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-amber-400 rounded-full shadow-lg"></div>
+                                    <div
+                                        class="bg-white/95 backdrop-blur text-gray-900 px-3 py-2 rounded-lg text-xs whitespace-nowrap shadow-lg">
+                                        <div class="font-bold">💼 法務-契約</div>
+                                        <div class="text-gray-600">削減80% / エラー90%減</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 自動車-顧客対応 (中央左下) -->
+                            <div class="absolute reveal-item" style="left: 5%; top: 82%;">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-purple-400 rounded-full shadow-lg"></div>
+                                    <div
+                                        class="bg-white/95 backdrop-blur text-gray-900 px-3 py-2 rounded-lg text-xs whitespace-nowrap shadow-lg">
+                                        <div class="font-bold">🚗 自動車-顧客対応</div>
+                                        <div class="text-gray-600">削減50% / 24時間対応</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 人材-採用 (中央) -->
+                            <div class="absolute reveal-item" style="left: 30%; top: 45%;">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-purple-400 rounded-full shadow-lg"></div>
+                                    <div
+                                        class="bg-white/95 backdrop-blur text-gray-900 px-3 py-2 rounded-lg text-xs whitespace-nowrap shadow-lg">
+                                        <div class="font-bold">👥 人材-採用</div>
+                                        <div class="text-gray-600">削減50% / 精度90%+</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-sm opacity-80 text-center">
+                            <p>📍 右上に近いほど高効率・高コスト削減を実現</p>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：说明框 -->
+                    <div class="p-4 rounded-xl bg-blue-500/20 border border-blue-400/30 h-fit">
+                        <h3 class="text-lg font-bold mb-4">📊 成果分布の読み方</h3>
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <span class="font-bold text-green-400">■ 右上（第1象限）</span><br />
+                                <span class="opacity-90">高効率×高コスト削減<br />最優先導入</span>
+                            </div>
+                            <div>
+                                <span class="font-bold text-blue-400">■ 左上（第2象限）</span><br />
+                                <span class="opacity-90">高効率×中コスト削減<br />効率重視案件</span>
+                            </div>
+                            <div>
+                                <span class="font-bold text-amber-400">■ 右下（第4象限）</span><br />
+                                <span class="opacity-90">中効率×高コスト削減<br />コスト重視案件</span>
+                            </div>
+                            <div>
+                                <span class="font-bold text-purple-400">■ 左下（第3象限）</span><br />
+                                <span class="opacity-90">中効率×中コスト削減<br />段階的導入</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 业绩统计卡片 -->
+                <div class="mt-6 grid md:grid-cols-3 gap-6">
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold">製造業</h3>
+                        <p class="mt-2 opacity-90">品質・データ管理で大幅改善</p>
+                        <div class="mt-3 text-2xl font-bold text-emerald-400">70%削減</div>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold">金融・法務</h3>
+                        <p class="mt-2 opacity-90">文書処理の自動化で効率化</p>
+                        <div class="mt-3 text-2xl font-bold text-blue-400">80-90%時短</div>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold">エネルギー</h3>
+                        <p class="mt-2 opacity-90">点検作業の革新的効率化</p>
+                        <div class="mt-3 text-2xl font-bold text-purple-400">15倍高速</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Case 01 - Manufacturing Quality -->
+        <section class="slide bg-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">CASE 01</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2">🏭 製造業：AI自動品質検査</h2>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-semibold">業界</span>：自動車部品製造
+                    </div>
+                </div>
+
+                <!-- (removed side panel here; moved to Case 08) -->
+
+                <div class="mt-10 comparison-grid">
+                    <div class="asis-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-red-600 mb-4">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>人手による目視検査に依存</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>検査員の習熟に時間がかかる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>24時間体制での人員配置が困難</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>検査品質のばらつきが発生</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>不良品の見逃しリスク</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>人件費が高い</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box">→</div>
+
+                    <div class="tobe-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-green-600 mb-4">TO-BE（改善後）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>AI画像認識による自動判定</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>即座に検査可能（学習不要）</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>24時間連続稼働を実現</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>均一な検査品質を維持</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>99%の検出精度を達成</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>人件費70%削減</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                        <h3 class="text-xl font-bold text-blue-900">📊 定量成果</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">99%</div>
+                                <div class="text-sm text-gray-600 mt-1">検査精度</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">70%</div>
+                                <div class="text-sm text-gray-600 mt-1">人件費削減</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-600">24時間</div>
+                                <div class="text-sm text-gray-600 mt-1">連続稼働</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-600">100%</div>
+                                <div class="text-sm text-gray-600 mt-1">品質均一化</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-amber-50 border border-amber-100">
+                        <h3 class="text-xl font-bold text-amber-900">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span
+                                class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">深層学習（CNN）</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">AI画像認識</span>
+                            <span
+                                class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">リアルタイム判定</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">自動分類</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-amber-200">
+                            <div class="text-sm text-gray-600">⏱ 導入期間：<span class="font-bold">3～5ヶ月</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: Case 02 - Data Governance -->
+        <section class="slide bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-blue-200">CASE 02</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2">🏭 製造業：データガバナンス</h2>
+                    </div>
+                    <div class="text-sm opacity-90">
+                        <span class="font-semibold">業界</span>：重工業
+                    </div>
+                </div>
+
+                <div class="mt-10 comparison-grid">
+                    <div class="p-6 rounded-2xl bg-red-900/30 border-2 border-red-500/50">
+                        <h3 class="text-xl font-bold text-red-300 mb-4">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3 opacity-90">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>データが各部門で分散管理</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>データ品質が不統一</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>必要なデータを探せない</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>データの重複と矛盾が発生</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>データ活用が進まない</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>意思決定に時間がかかる</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box text-white">→</div>
+
+                    <div class="p-6 rounded-2xl bg-green-900/30 border-2 border-green-500/50">
+                        <h3 class="text-xl font-bold text-green-300 mb-4">TO-BE（改善後）</h3>
+                        <ul class="space-y-3 opacity-90">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>統一データレイクで一元管理</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>自動品質チェック機能</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>メタデータで検索が容易</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>データの整合性を自動保証</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>全社でデータ活用が促進</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>リアルタイムで意思決定可能</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold">📊 定量成果</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-400">100%</div>
+                                <div class="text-sm opacity-80 mt-1">データ統合率</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-400">80%</div>
+                                <div class="text-sm opacity-80 mt-1">検索時間削減</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-400">50%</div>
+                                <div class="text-sm opacity-80 mt-1">意思決定高速化</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-400">95%</div>
+                                <div class="text-sm opacity-80 mt-1">品質向上</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">データレイク</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">メタデータ管理</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">品質監視</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">DCMM準拠</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-white/20">
+                            <div class="text-sm opacity-80">⏱ 導入期間：<span class="font-bold">3～6ヶ月</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: Case 03 - Finance Due Diligence -->
+        <section class="slide bg-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">CASE 03</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2">💼 金融：AIデューデリジェンス</h2>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-semibold">業界</span>：金融・銀行
+                    </div>
+                </div>
+
+                <div class="mt-10 comparison-grid">
+                    <div class="asis-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-red-600 mb-4">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>膨大な文書を人手で確認</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>分析に数週間～数ヶ月かかる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>見落としリスクが高い</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>専門知識を持つ人材不足</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>コンプライアンス確認が煩雑</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>作業コストが高い</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box">→</div>
+
+                    <div class="tobe-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-green-600 mb-4">TO-BE（改善後）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>AI自動文書解析</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>数時間～数日で分析完了</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>重要ポイントを自動抽出</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>AIが専門知識を補完</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>自動コンプライアンスチェック</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>処理コスト大幅削減</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                        <h3 class="text-xl font-bold text-blue-900">📊 定量成果</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">90%</div>
+                                <div class="text-sm text-gray-600 mt-1">処理時間短縮</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">95%</div>
+                                <div class="text-sm text-gray-600 mt-1">見落とし防止</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-600">60%</div>
+                                <div class="text-sm text-gray-600 mt-1">人件費削減</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-600">100%</div>
+                                <div class="text-sm text-gray-600 mt-1">コンプライアンス率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-amber-50 border border-amber-100">
+                        <h3 class="text-xl font-bold text-amber-900">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span
+                                class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">大規模言語モデル</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">文書自動解析</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">財務諸表分析</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">リスク検出</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-amber-200">
+                            <div class="text-sm text-gray-600">⏱ 導入期間：<span class="font-bold">2～4ヶ月</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: Case 04 - Legal Contract Review -->
+        <section class="slide bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-blue-200">CASE 04</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2">💼 法務：AI契約審査システム</h2>
+                    </div>
+                    <div class="text-sm opacity-90">
+                        <span class="font-semibold">業界</span>：法務・調達
+                    </div>
+                </div>
+
+                <div class="mt-10 comparison-grid">
+                    <div class="p-6 rounded-2xl bg-red-900/30 border-2 border-red-500/50">
+                        <h3 class="text-xl font-bold text-red-300 mb-4">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3 opacity-90">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>契約書作成に時間がかかる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>過去の契約書を探すのが大変</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>条項の抜け漏れが発生</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>リスク条項の見落とし</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>ナレッジが属人化</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>審査に一貫性がない</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box text-white">→</div>
+
+                    <div class="p-6 rounded-2xl bg-green-900/30 border-2 border-green-500/50">
+                        <h3 class="text-xl font-bold text-green-300 mb-4">TO-BE（改善後）</h3>
+                        <ul class="space-y-3 opacity-90">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>AIが自動で契約書を生成</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>過去事例を即座に検索</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>必要条項を自動チェック</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>リスク条項を自動抽出</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>ナレッジベースで共有</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>一貫した審査基準を維持</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold">📊 定量成果</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-400">70%</div>
+                                <div class="text-sm opacity-80 mt-1">作成効率向上</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-400">90%</div>
+                                <div class="text-sm opacity-80 mt-1">エラー削減</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-400">80%</div>
+                                <div class="text-sm opacity-80 mt-1">審査時間短縮</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-400">100%</div>
+                                <div class="text-sm opacity-80 mt-1">リスク検出率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">RAG技術</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">ナレッジベース</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">自動文書生成</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">リスク抽出AI</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-white/20">
+                            <div class="text-sm opacity-80">⏱ 導入期間：<span class="font-bold">2～4ヶ月</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: Case 05 - Energy Inspection -->
+        <section class="slide bg-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">CASE 05</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2">⚡ エネルギー：風力発電AI自動巡回検査</h2>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-semibold">業界</span>：再生可能エネルギー
+                    </div>
+                </div>
+
+                <div class="mt-10 comparison-grid">
+                    <div class="asis-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-red-600 mb-4">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>高所作業で危険が伴う</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>点検に時間がかかる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>発電を停止する必要がある</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>天候に左右される</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>点検員の確保が困難</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>点検コストが高い</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box">→</div>
+
+                    <div class="tobe-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-green-600 mb-4">TO-BE（改善後）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>ドローンで安全に点検</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>点検時間を大幅短縮</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>稼働しながら点検可能</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>悪天候以外は実施可能</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>AI自動判定で省人化</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>点検コストを大幅削減</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                        <h3 class="text-xl font-bold text-blue-900">📊 定量成果</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">15倍</div>
+                                <div class="text-sm text-gray-600 mt-1">点検効率</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">90%</div>
+                                <div class="text-sm text-gray-600 mt-1">停止時間削減</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-600">100%</div>
+                                <div class="text-sm text-gray-600 mt-1">安全性向上</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-600">60%</div>
+                                <div class="text-sm text-gray-600 mt-1">コスト削減</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-amber-50 border border-amber-100">
+                        <h3 class="text-xl font-bold text-amber-900">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">ドローン連携</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">AI画像認識</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">欠陥自動検出</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">デジタル管理</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-amber-200">
+                            <div class="text-sm text-gray-600">⏱ 導入期間：<span class="font-bold">3～6ヶ月</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 10: Case 06 - Automotive Customer Service -->
+        <section class="slide bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-blue-200">CASE 06</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2">🚗 自動車：LLM モデル顧客対応エージェント</h2>
+                    </div>
+                    <div class="text-sm opacity-90">
+                        <span class="font-semibold">業界</span>：自動車
+                    </div>
+                </div>
+
+                <div class="mt-10 comparison-grid">
+                    <div class="p-6 rounded-2xl bg-red-900/30 border-2 border-red-500/50">
+                        <h3 class="text-xl font-bold text-red-300 mb-4">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3 opacity-90">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>営業時間内のみ対応可能</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>問い合わせ対応に時間がかかる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>担当者の知識レベルにばらつき</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>ピーク時に待ち時間が発生</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>顧客情報の引き継ぎ漏れ</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span>人件費が高い</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box text-white">→</div>
+
+                    <div class="p-6 rounded-2xl bg-green-900/30 border-2 border-green-500/50">
+                        <h3 class="text-xl font-bold text-green-300 mb-4">TO-BE（改善後）</h3>
+                        <ul class="space-y-3 opacity-90">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>24時間365日対応</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>即時回答を実現</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>均一な高品質対応</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>待ち時間ゼロ</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>全履歴を自動記録</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span>運用コスト大幅削減</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold">📊 定量成果</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-400">24時間</div>
+                                <div class="text-sm opacity-80 mt-1">対応時間</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-400">95%</div>
+                                <div class="text-sm opacity-80 mt-1">顧客満足度</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-400">80%</div>
+                                <div class="text-sm opacity-80 mt-1">自動解決率</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-400">50%</div>
+                                <div class="text-sm opacity-80 mt-1">運用コスト削減</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">大規模言語モデル</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">感情分析</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">パーソナライズ推薦</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">人機協調</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-white/20">
+                            <div class="text-sm opacity-80">⏱ 導入期間：<span class="font-bold">3～5ヶ月</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: Case 07 - HR Recruitment -->
+        <section class="slide bg-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">CASE 07</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2">👥 人材：AI採用・人材マッチングシステム</h2>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-semibold">業界</span>：人材サービス
+                    </div>
+                </div>
+
+                <div class="mt-10 comparison-grid">
+                    <div class="asis-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-red-600 mb-4">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>履歴書を人手で確認</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>スクリーニングに時間がかかる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>マッチング精度が低い</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>採用担当者の負担が大きい</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>応募者への返信が遅い</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>優秀な人材を見逃す</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box">→</div>
+
+                    <div class="tobe-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-green-600 mb-4">TO-BE（改善後）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>AIが自動で履歴書解析</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>即座にスクリーニング完了</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>90%以上のマッチング精度</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>採用担当者の負担を50%削減</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>24時間自動応答</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>最適な人材を確実に発見</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                        <h3 class="text-xl font-bold text-blue-900">📊 定量成果</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">90%+</div>
+                                <div class="text-sm text-gray-600 mt-1">マッチング精度</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">50%</div>
+                                <div class="text-sm text-gray-600 mt-1">HR業務時間削減</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-600">80%</div>
+                                <div class="text-sm text-gray-600 mt-1">スクリーニング時短</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-600">95%</div>
+                                <div class="text-sm text-gray-600 mt-1">応募者満足度</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-amber-50 border border-amber-100">
+                        <h3 class="text-xl font-bold text-amber-900">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span
+                                class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">大規模言語モデル</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">履歴書自動解析</span>
+                            <span
+                                class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">AIエージェント</span>
+                            <span
+                                class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">マッチングアルゴリズム</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-amber-200">
+                            <div class="text-sm text-gray-600">⏱ 導入期間：<span class="font-bold">3～5ヶ月</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 12: Case 08 - CustPro (Customs Automation) -->
+        <section class="slide bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-blue-200">CASE 08</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2" data-i18n="s13c-title">🛃
+                            通関：CustPro（AI-OCR・HSコード推薦）</h2>
+                    </div>
+                    <div class="text-sm opacity-90">
+                        <span class="font-semibold" data-i18n="s13c-industry-label">業界</span>：<span
+                            data-i18n="s13c-industry">貿易・通関</span>
+                    </div>
+                </div>
+
+                <div class="mt-10 comparison-grid">
+                    <div class="p-6 rounded-2xl bg-red-900/30 border-2 border-red-500/50">
+                        <h3 class="text-xl font-bold text-red-300 mb-4" data-i18n="s13c-asis-title">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3 opacity-90">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span data-i18n="s13c-asis-1">メール添付の書類を人手で開いて転記・確認</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span data-i18n="s13c-asis-2">HSコードの選定が属人化し、判断のばらつきが出る</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span data-i18n="s13c-asis-3">NACCS/TradeNet等への入力・出力に時間がかかる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-400 font-bold">✗</span>
+                                <span data-i18n="s13c-asis-4">繁忙期に処理が滞留し、遅延・コスト増につながる</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box text-white">→</div>
+
+                    <div class="p-6 rounded-2xl bg-green-900/30 border-2 border-green-500/50">
+                        <h3 class="text-xl font-bold text-green-300 mb-4" data-i18n="s13c-tobe-title">TO-BE（改善後）</h3>
+                        <ul class="space-y-3 opacity-90">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span data-i18n="s13c-tobe-1">メール受信から案件化までをエージェントで自動処理</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span data-i18n="s13c-tobe-2">AI-OCRで書類を構造化し、必要項目を自動抽出</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span data-i18n="s13c-tobe-3">HSコードをAI推薦し、根拠とともに提案</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-400 font-bold">✓</span>
+                                <span data-i18n="s13c-tobe-4">NACCS/TradeNet向けデータ出力まで自動化</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold" data-i18n="s13c-kpi-title">📊 定量成果</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-400">90%</div>
+                                <div class="text-sm opacity-80 mt-1" data-i18n="s13c-kpi-1">業務時間短縮</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-400">80%</div>
+                                <div class="text-sm opacity-80 mt-1" data-i18n="s13c-kpi-2">コスト削減</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-400">99.2%</div>
+                                <div class="text-sm opacity-80 mt-1" data-i18n="s13c-kpi-3">AI-OCR精度</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-400">5分</div>
+                                <div class="text-sm opacity-80 mt-1" data-i18n="s13c-kpi-4">平均処理時間</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-white/20 text-sm opacity-80" data-i18n="s13c-kpi-note">
+                            ※ 公開情報の記載内容を要約（詳細は参照リンク）</div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-white/10 border border-white/15">
+                        <h3 class="text-xl font-bold" data-i18n="s13c-tech-title">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm"
+                                data-i18n="s13c-tech-1">AI-OCR</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm"
+                                data-i18n="s13c-tech-2">HSコード推薦（分類）</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm"
+                                data-i18n="s13c-tech-3">メールエージェント</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm"
+                                data-i18n="s13c-tech-4">業務ワークフロー自動化</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm"
+                                data-i18n="s13c-tech-5">外部システム連携（NACCS/TradeNet）</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-white/20">
+                            <div class="text-sm opacity-90">🔗 <span data-i18n="s13c-ref">参照</span>： <a
+                                    class="underline text-blue-200 hover:text-white break-all"
+                                    href="https://custpro.terabox.co.jp/home/ja?sourceType=asis_tobe" target="_blank"
+                                    rel="noopener noreferrer">https://custpro.terabox.co.jp/home/ja/</a></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Case01 images moved here (replaces original product visuals). Converted to hidden lightbox sources; preview UI provided via right-side panel (unified with Case09 style). -->
+                <div class="hidden" aria-hidden="true">
+                    <img class="lightbox-img" data-lightbox-group="custpro" data-lightbox-index="0"
+                        src="assets/CustPro1.png" alt="CustPro - Email intake agent" />
+                    <img class="lightbox-img" data-lightbox-group="custpro" data-lightbox-index="1"
+                        src="assets/CustPro2.png" alt="CustPro - OCR and HS code recommendation" />
+                </div>
+
+                <!-- Right-side floating panel: quick access to product images (visible on lg+) -->
+                <div class="hidden lg:flex flex-col items-center gap-3 absolute top-24 right-8 z-40">
+                    <button type="button" onclick="openLightbox('custpro',0)"
+                        class="px-4 py-3 bg-emerald-500 text-white rounded-xl shadow-lg hover:bg-emerald-600 transition-all">効果図を見る</button>
+                    <div class="flex flex-col gap-2 bg-white/5 p-2 rounded-lg border border-white/10">
+                        <button type="button" onclick="openLightbox('custpro',0)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/CustPro1.png" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                        <button type="button" onclick="openLightbox('custpro',1)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/CustPro2.png" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: Case 09 - KADO AI (HR Matching) -->
+        <section class="slide bg-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">CASE 09</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2 whitespace-nowrap" data-i18n="s14k-title">👥 人材：KADO AI（スキル解析・スマートマッチング）</h2>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-semibold" data-i18n="s14k-industry-label">業界</span>：<span
+                            data-i18n="s14k-industry">採用・HR</span>
+                    </div>
+                </div>
+
+                <div class="mt-10 comparison-grid">
+                    <div class="asis-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-red-600 mb-4" data-i18n="s14k-asis-title">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span data-i18n="s14k-asis-1">履歴書・職務経歴書の確認が手作業で時間がかかる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span data-i18n="s14k-asis-2">スキル要件の読み替えが属人化し、ミスマッチが起きる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span data-i18n="s14k-asis-3">候補者への提案がテンプレ化し、応募率が伸びない</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span data-i18n="s14k-asis-4">市場価値や育成方針の説明が定性的になりやすい</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box">→</div>
+
+                    <div class="tobe-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-green-600 mb-4" data-i18n="s14k-tobe-title">TO-BE（改善後）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span data-i18n="s14k-tobe-1">履歴書アップロード→AIがスキルを自動抽出・可視化</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span data-i18n="s14k-tobe-2">候補者×求人をスマートにマッチングし優先順位付け</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span data-i18n="s14k-tobe-3">市場価値診断やキャリア提案を半自動で生成</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span data-i18n="s14k-tobe-4">説明の標準化で、採用スピードと品質を両立</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                        <h3 class="text-xl font-bold text-blue-900" data-i18n="s14k-kpi-title">📊 定量成果（公開情報例）</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">3,200+</div>
+                                <div class="text-sm text-gray-600 mt-1" data-i18n="s14k-kpi-1">掲載案件</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">15,000+</div>
+                                <div class="text-sm text-gray-600 mt-1" data-i18n="s14k-kpi-2">登録者</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-600">94%</div>
+                                <div class="text-sm text-gray-600 mt-1" data-i18n="s14k-kpi-3">マッチング精度</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-600">2週間</div>
+                                <div class="text-sm text-gray-600 mt-1" data-i18n="s14k-kpi-4">平均マッチング期間</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-blue-200 text-sm text-gray-600" data-i18n="s14k-kpi-note">
+                            ※ 公開情報の記載内容を要約（詳細は参照リンク）</div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-amber-50 border border-amber-100">
+                        <h3 class="text-xl font-bold text-amber-900" data-i18n="s14k-tech-title">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200"
+                                data-i18n="s14k-tech-1">履歴書/職務経歴の情報抽出</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200"
+                                data-i18n="s14k-tech-2">スキル推定・正規化</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200"
+                                data-i18n="s14k-tech-3">推薦（レコメンド）</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200"
+                                data-i18n="s14k-tech-4">LLM/自然言語処理</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-amber-200">
+                            <div class="text-sm text-gray-600">🔗 <span data-i18n="s14k-ref">参照</span>： <a
+                                    class="underline text-blue-700 hover:text-blue-900 break-all"
+                                    href="https://www.kado-ai.com/" target="_blank"
+                                    rel="noopener noreferrer">https://www.kado-ai.com/</a></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visible product visuals removed for Case 09 as requested; keep hidden lightbox sources so side-panel buttons still work -->
+                <div class="hidden" aria-hidden="true">
+                    <img class="lightbox-img" data-lightbox-group="kado" data-lightbox-index="0" src="assets/kado1.png"
+                        alt="KADO AI - skill analysis" />
+                    <img class="lightbox-img" data-lightbox-group="kado" data-lightbox-index="1" src="assets/kado2.png"
+                        alt="KADO AI - matching" />
+                </div>
+
+                <!-- Right-side floating panel: quick access to product images (visible on lg+) -->
+                <div class="hidden lg:flex flex-col items-center gap-3 absolute top-24 right-8 z-40">
+                    <button type="button" onclick="openLightbox('kado',0)"
+                        class="px-4 py-3 bg-emerald-500 text-white rounded-xl shadow-lg hover:bg-emerald-600 transition-all">効果図を見る</button>
+                    <div class="flex flex-col gap-2 bg-white/5 p-2 rounded-lg border border-white/10">
+                        <button type="button" onclick="openLightbox('kado',0)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/kado1.png" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                        <button type="button" onclick="openLightbox('kado',1)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/kado2.png" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lightbox (Image Viewer) -->
+        <div id="lightbox" class="fixed inset-0 z-[1000] hidden" aria-hidden="true">
+            <div id="lightbox-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+
+            <div class="relative h-full w-full flex items-center justify-center p-4">
+                <div class="relative w-full max-w-6xl">
+                    <div class="absolute -top-2 right-0 flex items-center gap-2">
+                        <button id="lightbox-close" type="button"
+                            class="px-3 py-2 rounded-lg bg-white/10 text-white border border-white/20 hover:bg-white/20 transition z-50 pointer-events-auto cursor-pointer"
+                            aria-label="Close">✕</button>
+                    </div>
+
+                    <button id="lightbox-prev" type="button"
+                        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-10 p-3 rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition"
+                        aria-label="Previous">‹</button>
+                    <button id="lightbox-next" type="button"
+                        class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-10 p-3 rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition"
+                        aria-label="Next">›</button>
+
+                    <div id="lightbox-viewport" class="overflow-hidden rounded-2xl border border-white/15 bg-black/20">
+                        <div id="lightbox-track"
+                            class="flex transition-transform duration-300 ease-out will-change-transform"
+                            style="transform: translateX(0%)">
+                            <!-- Slides inserted via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Thumbnails (clickable) -->
+                    <div id="lightbox-thumbs" class="mt-3 flex items-center justify-center gap-2 overflow-x-auto py-2">
+                    </div>
+
+                    <div class="mt-3 flex items-center justify-between text-sm text-white/80">
+                        <div id="lightbox-caption" class="truncate pr-4"></div>
+                        <div id="lightbox-counter" class="shrink-0 tabular-nums"></div>
+                    </div>
+
+                    <p class="mt-2 text-xs text-white/60">Tip: ←/→ で切替、ESC で閉じる、スマホは左右スワイプ</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side thumbnail hover preview -->
+        <div id="ss-thumb-preview"
+            class="hidden fixed z-[1100] w-56 p-2 rounded-lg bg-white/90 border border-slate-200 shadow-lg">
+            <img id="ss-thumb-preview-img" src="" alt="preview" class="w-full h-auto object-contain rounded-md"
+                draggable="false" />
+            <div id="ss-thumb-preview-cap" class="mt-2 text-sm text-slate-700 truncate"></div>
+        </div>
+
+        <!-- Slide 14: Call to Action - AI時代への行動 (Moved to end) -->
+        <section class="slide bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 text-white">
+            <div class="max-w-5xl mx-auto px-6 pt-12 pb-40 text-center">
+                <div
+                    class="mb-6 inline-block border border-yellow-400/50 rounded-full px-6 py-2 bg-yellow-400/10 backdrop-blur-sm">
+                    <p class="text-sm md:text-base font-bold tracking-wide text-yellow-300" data-i18n="s12-badge">
+                        ⚡ AI時代の新しい選択
+                    </p>
+                </div>
+
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-6 leading-tight">
+                    <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                        <span data-i18n="s12-title1">今日の決断が、</span><br /><span data-i18n="s12-title2">明日の競争力を決める</span>
+                    </span>
+                </h2>
+
+                <p class="text-xl md:text-2xl font-light opacity-90 mb-10 leading-relaxed" data-i18n="s12-subtitle">
+                    生成AIは、もはや「導入を検討する技術」ではなく、<br />
+                    「導入しないリスクを抱える時代」へ
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-6 mt-12 mb-12">
+                    <div
+                        class="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                        <div class="text-5xl mb-4">🚀</div>
+                        <h3 class="text-2xl font-bold mb-3 text-blue-300" data-i18n="s12-card1-title">先行者優位</h3>
+                        <p class="text-base opacity-80 leading-relaxed">
+                            <span data-i18n="s12-card1-text1">今始める企業と、1年後に始める企業の差は</span><br />
+                            <span class="font-bold text-yellow-300"><span
+                                    data-i18n="s12-card1-text2">「改善」ではなく「生存」</span><span
+                                    data-i18n="s12-card1-text3">の差になる</span></span>
+                        </p>
+                    </div>
+
+                    <div
+                        class="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                        <div class="text-5xl mb-4">💡</div>
+                        <h3 class="text-2xl font-bold mb-3 text-purple-300" data-i18n="s12-card2-title">働き方の革命</h3>
+                        <p class="text-base opacity-80 leading-relaxed">
+                            <span data-i18n="s12-card2-text1">人間は創造的な仕事に集中し、</span><br />
+                            <span data-i18n="s12-card2-text2">AIが反復作業を担う</span><br />
+                            <span class="font-bold text-yellow-300" data-i18n="s12-card2-text3">新しい生産性の形</span>
+                        </p>
+                    </div>
+
+                    <div
+                        class="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                        <div class="text-5xl mb-4">🎯</div>
+                        <h3 class="text-2xl font-bold mb-3 text-pink-300" data-i18n="s12-card3-title">確実なROI</h3>
+                        <p class="text-base opacity-80 leading-relaxed">
+                            <span data-i18n="s12-card3-text1">本資料の事例が証明：</span><br />
+                            <span class="font-bold text-yellow-300" data-i18n="s12-card3-text2">平均60%のコスト削減</span><br />
+                            <span data-i18n="s12-card3-text3">2-6ヶ月で効果実感</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="mt-10 p-8 rounded-3xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-2 border-blue-400/30 backdrop-blur-sm mb-32">
+                    <p class="text-2xl md:text-3xl font-bold mb-4 text-yellow-300" data-i18n="s12-cta-title">
+                        「いつかやる」は、もう間に合わない
+                    </p>
+                    <p class="text-lg md:text-xl opacity-90 mb-6 leading-relaxed" data-i18n="s12-cta-text">
+                        AI技術の進化は加速し続けています。<br />
+                        早期に取り組む企業ほど、より大きな成果を得られる。<br />
+                        変革を今からです！
+                    </p>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 text-base md:text-lg">
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-400 text-2xl">✓</span>
+                            <span data-i18n="s12-check1">小さく始めて、大きく育てる</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-400 text-2xl">✓</span>
+                            <span data-i18n="s12-check2">リスクを最小化し、成果を最大化</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-400 text-2xl">✓</span>
+                            <span data-i18n="s12-check3">まずは無料相談から</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pb-24 text-lg md:text-xl opacity-80 italic">
+                    <span data-i18n="s12-quote">"The best time to start was yesterday. The second best time is
+                        now."</span><br />
+                    <span class="text-sm mt-2 block opacity-60" data-i18n="s12-quote-author">— AI時代のビジネスリーダーへ</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 15: References (External) -->
+        <section class="slide bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white">
+            <div class="max-w-5xl mx-auto px-6 py-18 text-center pt-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6" data-i18n="s13r-title">参考リンク（実際のAI活用事例）</h2>
+                <p class="text-lg md:text-xl opacity-90 mb-10 leading-relaxed" data-i18n="s13r-subtitle">
+                    本資料のケース（AS-IS→TO-BE）と近い「実プロダクトの活用例」を、参考として掲載します。
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 text-left">
+                    <div class="p-8 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-sm">
+                        <div class="text-2xl font-bold mb-2">KADO AI</div>
+                        <p class="text-base opacity-90 leading-relaxed" data-i18n="s13r-kado-desc">
+                            人材領域のAI活用（スキル解析・スマートマッチング・市場価値診断）。
+                            本資料の「人材：採用マッチング」ケースと関連。
+                        </p>
+                        <div class="mt-5">
+                            <a class="underline text-blue-200 hover:text-white break-all"
+                                href="https://www.kado-ai.com/" target="_blank"
+                                rel="noopener noreferrer">https://www.kado-ai.com/</a>
+                        </div>
+                    </div>
+
+                    <div class="p-8 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-sm">
+                        <div class="text-2xl font-bold mb-2">CustPro（Terabox）</div>
+                        <p class="text-base opacity-90 leading-relaxed" data-i18n="s13r-custpro-desc">
+                            通関業務のAI自動化（メール処理、AI-OCR、HSコード推薦、NACCS/TradeNet出力）。
+                            本資料の「文書処理自動化／OCR／分類」系ケースと関連。
+                        </p>
+                        <div class="mt-5">
+                            <a class="underline text-blue-200 hover:text-white break-all"
+                                href="https://custpro.terabox.co.jp/home/ja/" target="_blank"
+                                rel="noopener noreferrer">https://custpro.terabox.co.jp/home/ja/</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 p-8 rounded-2xl bg-white/5 border border-white/10 text-left">
+                    <h3 class="text-lg font-bold" data-i18n="s13r-map-title">本資料ケースとの対応（例）</h3>
+                    <ul class="mt-4 space-y-2 text-base opacity-90">
+                        <li data-i18n="s13r-map-1">• 人材：採用マッチング → KADO AI（AIスキル解析・マッチング）</li>
+                        <li data-i18n="s13r-map-2">• 文書/帳票処理 → CustPro（AI-OCR・HSコード推薦）</li>
+                        <li data-i18n="s13r-map-3">• 業務自動化/エージェント → CustPro（メールAgent・ワークフロー自動化）</li>
+                    </ul>
+                </div>
+
+                <div class="mt-10 p-8 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-sm">
+                    <div class="text-2xl font-bold mb-4" data-i18n="s13-company">Terabox Inc. テラボックス株式会社</div>
+                    <div class="space-y-2 text-lg">
+                        <p>📧 sales@terabox.jp</p>
+                        <p class="mt-6 text-sm opacity-80" data-i18n="s13-copyright">© 2026 Terabox Inc. All Rights
+                            Reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navigation">
+        <div id="progress-bar"></div>
+        <div class="flex items-center justify-between p-4 max-w-6xl mx-auto">
+            <div class="flex items-center gap-4">
+                <span class="text-sm font-semibold text-gray-700"><span data-i18n="nav-slide">スライド</span> <span
+                        id="current-slide">1</span> / <span id="total-slides">13</span></span>
+            </div>
+            <div class="flex gap-2 items-center">
+                <button id="prev-btn"
+                    class="px-6 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    data-i18n="nav-prev">前へ</button>
+                <button id="next-btn"
+                    class="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    data-i18n="nav-next">次へ</button>
+                <button id="toc-btn"
+                    class="px-4 py-2 rounded-lg bg-white/10 text-gray-800 hover:bg-white/20 transition ml-2"
+                    data-i18n="nav-toc">目次へ</button>
+            </div>
+            <div class="copyright-text text-xs text-gray-500">© 2026 Terabox Inc. テラボックス株式会社</div>
+        </div>
+    </nav>
+
+    <script>
+        // Presentation State
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const currentSlideEl = document.getElementById('current-slide');
+        const totalSlidesEl = document.getElementById('total-slides');
+
+        // --- Layout helpers (avoid fixed nav overlapping slide content) ---
+        function updateSlideBottomPadding() {
+            const nav = document.getElementById('navigation');
+            if (!nav) return;
+
+            // Extra breathing room so the last line isn't tight against the nav.
+            // Chrome sometimes still clips a few pixels due to rounding/overlay scrollbars,
+            // so we keep this intentionally conservative.
+            const extra = 48;
+            const navHeight = nav.getBoundingClientRect().height || 0;
+
+            // iOS safe-area inset bottom support. On most browsers this will be 0.
+            const safeInset = parseFloat(
+                getComputedStyle(document.documentElement)
+                    .getPropertyValue('--safe-area-inset-bottom')
+            ) || 0;
+
+            document.documentElement.style.setProperty(
+                '--slide-bottom-padding',
+                `${Math.ceil(navHeight + safeInset + extra + window.devicePixelRatio)}px`
+            );
+        }
+
+        // Initialize
+        totalSlidesEl.textContent = totalSlides;
+        showSlide(0);
+
+        // Keep bottom padding in sync with nav height (responsive / zoom / font changes)
+        updateSlideBottomPadding();
+        window.addEventListener('resize', updateSlideBottomPadding);
+        setTimeout(updateSlideBottomPadding, 250);
+
+        // Navigation Functions
+        function showSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+
+            slides.forEach(s => s.classList.remove('active'));
+            slides[index].classList.add('active');
+            currentSlideIndex = index;
+            currentSlideEl.textContent = index + 1;
+
+            // Update progress bar
+            progressBar.style.width = ((index + 1) / totalSlides * 100) + '%';
+
+            // Update button states
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === totalSlides - 1;
+
+            // Scroll to top
+            slides[index].scrollTop = 0;
+            // If this slide contains a screenshots section, scroll it into view so the user sees it first
+            setTimeout(() => {
+                try {
+                    const anchor = slides[index].querySelector('.ss-anchor');
+                    if (anchor) {
+                        const slideRect = slides[index].getBoundingClientRect();
+                        const anchorRect = anchor.getBoundingClientRect();
+                        const offset = anchorRect.top - slideRect.top;
+                        // Small top padding so header isn't flush to the nav
+                        slides[index].scrollTo({ top: Math.max(0, Math.floor(offset - 12)), behavior: 'smooth' });
+                    }
+                } catch (err) {
+                    // ignore if something unexpected happens
+                    console.warn('scroll to ss-anchor failed', err);
+                }
+            }, 180);
+
+            // Trigger reveal animations
+            setTimeout(() => {
+                const revealItems = slides[index].querySelectorAll('.reveal-item');
+                revealItems.forEach((item, i) => {
+                    setTimeout(() => item.classList.add('visible'), i * 100);
+                });
+            }, 100);
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides - 1) {
+                showSlide(currentSlideIndex + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                showSlide(currentSlideIndex - 1);
+            }
+        }
+
+        // Event Listeners
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        // Table of Contents button binding
+        const tocBtnEl = document.getElementById('toc-btn');
+        if (tocBtnEl) {
+            tocBtnEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Table of Contents is the second slide (index 1)
+                showSlide(1);
+            });
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // TOC Links
+        document.querySelectorAll('.toc-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetSlide = parseInt(link.dataset.goto);
+                if (!isNaN(targetSlide)) {
+                    showSlide(targetSlide);
+                }
+            });
+        });
+
+        // Language Switcher with translations
+        const translations = {
+            ja: {
+                // Slide 1
+                'subtitle-label': '',
+                'title': 'AIソリューション導入事例集',
+                'subtitle': 'AS-IS（現状課題）→ TO-BE（AI導入後）',
+                'tagline': '2025年実績：12案件の変革実例',
+                'meta-date-label': '作成日',
+                'meta-date': '2026年1月7日',
+                'meta-version-label': '版',
+                'meta-version': '1.0',
+
+                // Slide 2 - TOC
+                'toc-label': 'CONTENTS',
+                'toc-title': '目次',
+                'toc-sub': '番号をクリックすると、その章へ直接ジャンプできます。',
+                'toc-summary': '概要',
+                'toc-cases': '事例（AS-IS → TO-BE）',
+                'toc-case-08': '🛃 通関：CustPro（AI-OCR・HSコード）',
+                'toc-case-09': '👥 人材：KADO AI（スキル解析・マッチング）',
+                'toc-note-title': '操作方法',
+                'toc-note': '→ / ← キーまたはスペースで次/前のスライドへ移動できます',
+
+                // Slide 12 - Call to Action
+                's12-badge': '⚡ AI時代の新しい選択',
+                's12-title1': '今日の決断が、',
+                's12-title2': '明日の競争力を決める',
+                's12-subtitle': '生成AIは、もはや「導入を検討する技術」ではなく、「導入しないリスクを抱える時代」へ',
+                's12-card1-title': '先行者優位',
+                's12-card1-text1': '今始める企業と、1年後に始める企業の差は',
+                's12-card1-text2': '「改善」ではなく「生存」',
+                's12-card1-text3': 'の差になる',
+                's12-card2-title': '働き方の革命',
+                's12-card2-text1': '人間は創造的な仕事に集中し、',
+                's12-card2-text2': 'AIが反復作業を担う',
+                's12-card2-text3': '新しい生産性の形',
+                's12-card3-title': '確実なROI',
+                's12-card3-text1': '本資料の事例が証明：',
+                's12-card3-text2': '平均60%のコスト削減',
+                's12-card3-text3': '2-6ヶ月で効果実感',
+                's12-cta-title': '「いつかやる」は、もう間に合わない',
+                's12-cta-text': 'Microsoft、SoftBankが推進するAI経営革新。グローバル企業は既に動いている。日本企業も、今すぐ動き出す時です。',
+                's12-check1': '小さく始めて、大きく育てる',
+                's12-check2': 'リスクを最小化し、成果を最大化',
+                's12-check3': 'まずは無料相談から',
+                's12-quote': '"The best time to start was yesterday. The second best time is now."',
+                's12-quote-author': '— AI時代のビジネスリーダーへ',
+
+                // Slide 13 - Contact
+                's13-title': 'お問い合わせ',
+                's13-subtitle': '30分の無料相談で、貴社の課題をお聞かせください',
+                's13-company': 'Terabox Inc. テラボックス株式会社',
+                's13-division': '',
+                's13-copyright': '© 2026 Terabox Inc. テラボックス株式会社. All Rights Reserved.',
+
+                // Slide 3 - Summary
+                's3-label': 'SUMMARY',
+                's3-title': '2025年 導入実績サマリー',
+                's3-subtitle': '12案件で実証された変革効果',
+                's3-stat1': '導入案件数',
+                's3-stat2': '対応業界',
+                's3-stat3': '平均導入期間',
+                's3-stat4': '最高精度達成',
+                's3-benefit1-title': 'コスト削減効果',
+                's3-benefit1-item1': '人件費：50-70%削減',
+                's3-benefit1-item2': '運用コスト：40-60%削減',
+                's3-benefit1-item3': '処理コスト：大幅削減',
+                's3-benefit2-title': '効率向上効果',
+                's3-benefit2-item1': '処理速度：10-15倍高速化',
+                's3-benefit2-item2': '業務時間：70-90%短縮',
+                's3-benefit2-item3': '24時間稼働実現',
+                's3-benefit3-title': '品質向上効果',
+                's3-benefit3-item1': '精度：90-99%達成',
+                's3-benefit3-item2': 'エラー：80-95%削減',
+                's3-benefit3-item3': '品質均一化：100%',
+
+                // Slide 4 - Industry Map
+                's4-label': 'INDUSTRY MAP',
+                's4-title': '業界別成果マップ',
+                's4-subtitle': 'コスト削減 × 効率向上で俯瞰',
+
+                // Slide 13R - External References
+                's13r-title': '参考リンク（実際のAI活用事例）',
+                's13r-subtitle': '本資料のケース（AS-IS→TO-BE）と近い「実プロダクトの活用例」を、参考として掲載します。',
+                's13r-kado-desc': '人材領域のAI活用（スキル解析・スマートマッチング・市場価値診断）。本資料の「人材：採用マッチング」ケースと関連。',
+                's13r-custpro-desc': '通関業務のAI自動化（メール処理、AI-OCR、HSコード推薦、NACCS/TradeNet出力）。本資料の「文書処理自動化／OCR／分類」系ケースと関連。',
+                's13r-map-title': '本資料ケースとの対応（例）',
+                's13r-map-1': '• 人材：採用マッチング → KADO AI（AIスキル解析・マッチング）',
+                's13r-map-2': '• 文書/帳票処理 → CustPro（AI-OCR・HSコード推薦）',
+                's13r-map-3': '• 業務自動化/エージェント → CustPro（メールAgent・ワークフロー自動化）',
+
+                // Slide 13 - Case 08 (CustPro)
+                's13c-title': '🛃 通関：CustPro（AI-OCR・HSコード推薦）',
+                's13c-industry-label': '業界',
+                's13c-industry': '貿易・通関',
+                's13c-asis-title': 'AS-IS（現状課題）',
+                's13c-asis-1': 'メール添付の書類を人手で開いて転記・確認',
+                's13c-asis-2': 'HSコードの選定が属人化し、判断のばらつきが出る',
+                's13c-asis-3': 'NACCS/TradeNet等への入力・出力に時間がかかる',
+                's13c-asis-4': '繁忙期に処理が滞留し、遅延・コスト増につながる',
+                's13c-tobe-title': 'TO-BE（改善後）',
+                's13c-tobe-1': 'メール受信から案件化までをエージェントで自動処理',
+                's13c-tobe-2': 'AI-OCRで書類を構造化し、必要項目を自動抽出',
+                's13c-tobe-3': 'HSコードをAI推薦し、根拠とともに提案',
+                's13c-tobe-4': 'NACCS/TradeNet向けデータ出力まで自動化',
+                's13c-kpi-title': '📊 定量成果',
+                's13c-kpi-1': '業務時間短縮',
+                's13c-kpi-2': 'コスト削減',
+                's13c-kpi-3': 'AI-OCR精度',
+                's13c-kpi-4': '平均処理時間',
+                's13c-kpi-note': '※ 公開情報の記載内容を要約（詳細は参照リンク）',
+                's13c-tech-title': '🔧 採用技術',
+                's13c-tech-1': 'AI-OCR',
+                's13c-tech-2': 'HSコード推薦（分類）',
+                's13c-tech-3': 'メールエージェント',
+                's13c-tech-4': '業務ワークフロー自動化',
+                's13c-tech-5': '外部システム連携（NACCS/TradeNet）',
+                's13c-ref': '参照',
+                's13c-ss-title': '🖼️ プロダクト効果イメージ（例）',
+                's13c-ss-note': '※ 画像は差し替え可能：assets/ 配下に配置して src を更新してください',
+                's13c-ss-cap-1': '① メール受信→案件化（Agent）で自動振り分け',
+                's13c-ss-cap-2': '② AI-OCR抽出→HSコード推薦→出力の流れ',
+
+                // Slide 14 - Case 09 (KADO AI)
+                's14k-title': '👥 人材：KADO AI（スキル解析・スマートマッチング）',
+                's14k-industry-label': '業界',
+                's14k-industry': '採用・HR',
+                's14k-asis-title': 'AS-IS（現状課題）',
+                's14k-asis-1': '履歴書・職務経歴書の確認が手作業で時間がかかる',
+                's14k-asis-2': 'スキル要件の読み替えが属人化し、ミスマッチが起きる',
+                's14k-asis-3': '候補者への提案がテンプレ化し、応募率が伸びない',
+                's14k-asis-4': '市場価値や育成方針の説明が定性的になりやすい',
+                's14k-tobe-title': 'TO-BE（改善後）',
+                's14k-tobe-1': '履歴書アップロード→AIがスキルを自動抽出・可視化',
+                's14k-tobe-2': '候補者×求人をスマートにマッチングし優先順位付け',
+                's14k-tobe-3': '市場価値診断やキャリア提案を半自動で生成',
+                's14k-tobe-4': '説明の標準化で、採用スピードと品質を両立',
+                's14k-kpi-title': '📊 定量成果（公開情報例）',
+                's14k-kpi-1': '掲載案件',
+                's14k-kpi-2': '登録者',
+                's14k-kpi-3': 'マッチング精度',
+                's14k-kpi-4': '平均マッチング期間',
+                's14k-kpi-note': '※ 公開情報の記載内容を要約（詳細は参照リンク）',
+                's14k-tech-title': '🔧 採用技術',
+                's14k-tech-1': '履歴書/職務経歴の情報抽出',
+                's14k-tech-2': 'スキル推定・正規化',
+                's14k-tech-3': '推薦（レコメンド）',
+                's14k-tech-4': 'LLM/自然言語処理',
+                's14k-ref': '参照',
+                's14k-ss-title': '🖼️ プロダクト効果イメージ（例）',
+                's14k-ss-note': '※ 画像は差し替え可能：assets/ 配下に配置して src を更新してください',
+                's14k-ss-cap-1': '① 履歴書アップロード→スキルを自動抽出して可視化',
+                's14k-ss-cap-2': '② スマートマッチングでおすすめ・優先順位を提示',
+
+                // Navigation
+                'nav-prev': '前へ',
+                'nav-next': '次へ',
+                'nav-slide': 'スライド'
+            },
+            en: {
+                // Slide 1
+                'subtitle-label': '',
+                'title': 'AI Solution Implementation Case Studies',
+                'subtitle': 'AS-IS (Current Issues) → TO-BE (After AI Implementation)',
+                'tagline': '2025 Results: 12 Transformation Examples',
+                'meta-date-label': 'Created',
+                'meta-date': 'January 7, 2026',
+                'meta-version-label': 'Version',
+                'meta-version': '1.0',
+
+                // Slide 2 - TOC
+                'toc-label': 'CONTENTS',
+                'toc-title': 'Table of Contents',
+                'toc-sub': 'Click on the numbers to jump directly to that chapter.',
+                'toc-summary': 'Summary',
+                'toc-cases': 'Case Studies (AS-IS → TO-BE)',
+                'toc-case-08': '🛃 Customs: CustPro (AI-OCR & HS Codes)',
+                'toc-case-09': '👥 HR: KADO AI (Skill Analysis & Matching)',
+                'toc-note-title': 'How to Navigate',
+                'toc-note': 'Use → / ← keys or Space to move to next/previous slide',
+
+                // Slide 12 - Call to Action
+                's12-badge': '⚡ A New Choice in the AI Era',
+                's12-title1': 'Today\'s Decision',
+                's12-title2': 'Determines Tomorrow\'s Competitiveness',
+                's12-subtitle': 'Generative AI is no longer "technology to consider implementing" but an era where "not implementing carries risks"',
+                's12-card1-title': 'First-Mover Advantage',
+                's12-card1-text1': 'The gap between companies starting now and those starting in a year',
+                's12-card1-text2': 'is not about "improvement" but',
+                's12-card1-text3': '"survival"',
+                's12-card2-title': 'Work Revolution',
+                's12-card2-text1': 'Humans focus on creative work,',
+                's12-card2-text2': 'AI handles repetitive tasks',
+                's12-card2-text3': 'A new form of productivity',
+                's12-card3-title': 'Proven ROI',
+                's12-card3-text1': 'Proven by our case studies:',
+                's12-card3-text2': 'Average 60% cost reduction',
+                's12-card3-text3': 'Results in 2-6 months',
+                's12-cta-title': '"Someday" is No Longer Soon Enough',
+                's12-cta-text': 'AI business transformation promoted by Microsoft and SoftBank. Global companies are already moving. Japanese companies must act now.',
+                's12-check1': 'Start small, grow big',
+                's12-check2': 'Minimize risk, maximize results',
+                's12-check3': 'Start with a free consultation',
+                's12-quote': '"The best time to start was yesterday. The second best time is now."',
+                's12-quote-author': '— To Business Leaders in the AI Era',
+
+                // Slide 13 - Contact
+                's13-title': 'Contact Us',
+                's13-subtitle': 'Share your company\'s challenges in a free 30-minute consultation',
+                's13-company': 'Terabox Inc. テラボックス株式会社',
+                's13-division': '',
+                's13-copyright': '© 2026 Terabox Inc. テラボックス株式会社. All Rights Reserved.',
+
+                // Slide 3 - Summary
+                's3-label': 'SUMMARY',
+                's3-title': '2025 Implementation Summary',
+                's3-subtitle': 'Transformation effects proven by 12 projects',
+                's3-stat1': 'Projects Implemented',
+                's3-stat2': 'Industries Covered',
+                's3-stat3': 'Avg. Implementation',
+                's3-stat4': 'Highest Accuracy',
+                's3-benefit1-title': 'Cost Reduction',
+                's3-benefit1-item1': 'Labor: 50-70% reduction',
+                's3-benefit1-item2': 'Operations: 40-60% reduction',
+                's3-benefit1-item3': 'Processing: Significant reduction',
+                's3-benefit2-title': 'Efficiency Improvement',
+                's3-benefit2-item1': 'Speed: 10-15x faster',
+                's3-benefit2-item2': 'Work time: 70-90% shorter',
+                's3-benefit2-item3': '24/7 operations enabled',
+                's3-benefit3-title': 'Quality Improvement',
+                's3-benefit3-item1': 'Accuracy: 90-99% achieved',
+                's3-benefit3-item2': 'Errors: 80-95% reduced',
+                's3-benefit3-item3': 'Quality standardization: 100%',
+
+                // Slide 4 - Industry Map
+                's4-label': 'INDUSTRY MAP',
+                's4-title': 'Industry Results Map',
+                's4-subtitle': 'Overview of Cost Reduction × Efficiency',
+
+                // Slide 13R - External References
+                's13r-title': 'Reference Links (Real AI Use Cases)',
+                's13r-subtitle': 'As a reference, we list real products/services whose use cases align with this deck’s AS-IS → TO-BE case themes.',
+                's13r-kado-desc': 'AI in HR (skill analysis, smart matching, market value diagnosis). Related to our “HR: Recruiting Matching” case.',
+                's13r-custpro-desc': 'AI automation for customs operations (email processing, AI-OCR, HS code recommendation, NACCS/TradeNet output). Related to our “document processing/OCR/classification” themes.',
+                's13r-map-title': 'Example mapping to this deck',
+                's13r-map-1': '• HR: Recruiting Matching → KADO AI (AI skill analysis & matching)',
+                's13r-map-2': '• Document/form processing → CustPro (AI-OCR & HS code recommendation)',
+                's13r-map-3': '• Workflow automation/agents → CustPro (Email Agent & workflow automation)',
+
+                // Slide 13 - Case 08 (CustPro)
+                's13c-title': '🛃 Customs: CustPro (AI-OCR & HS Code Recommendation)',
+                's13c-industry-label': 'Industry',
+                's13c-industry': 'Trade & Customs',
+                's13c-asis-title': 'AS-IS (Current issues)',
+                's13c-asis-1': 'Manually open email attachments and transcribe/verify documents',
+                's13c-asis-2': 'HS code selection is person-dependent and inconsistent',
+                's13c-asis-3': 'Input/output for NACCS/TradeNet takes time',
+                's13c-asis-4': 'Backlogs in peak season lead to delays and higher costs',
+                's13c-tobe-title': 'TO-BE (After improvement)',
+                's13c-tobe-1': 'Automate from email reception to case creation with an agent',
+                's13c-tobe-2': 'Use AI-OCR to structure documents and extract required fields',
+                's13c-tobe-3': 'Recommend HS codes with rationale',
+                's13c-tobe-4': 'Automate data export for NACCS/TradeNet',
+                's13c-kpi-title': '📊 Quantified impact',
+                's13c-kpi-1': 'Less work time',
+                's13c-kpi-2': 'Lower cost',
+                's13c-kpi-3': 'AI-OCR accuracy',
+                's13c-kpi-4': 'Average handling time',
+                's13c-kpi-note': '* Summarized from public information (see reference link for details)',
+                's13c-tech-title': '🔧 Technology used',
+                's13c-tech-1': 'AI-OCR',
+                's13c-tech-2': 'HS code recommendation (classification)',
+                's13c-tech-3': 'Email agent',
+                's13c-tech-4': 'Workflow automation',
+                's13c-tech-5': 'Integration (NACCS/TradeNet)',
+                's13c-ref': 'Reference',
+                's13c-ss-title': '🖼️ Product visuals (examples)',
+                's13c-ss-note': '* Replaceable images: put files under assets/ and update the src paths',
+                's13c-ss-cap-1': '1) Email intake → case creation (Agent) auto-triage',
+                's13c-ss-cap-2': '2) AI-OCR extraction → HS code recommendation → export flow',
+
+                // Slide 14 - Case 09 (KADO AI)
+                's14k-title': '👥 HR: KADO AI (Skill Analysis & Smart Matching)',
+                's14k-industry-label': 'Industry',
+                's14k-industry': 'Recruiting & HR',
+                's14k-asis-title': 'AS-IS (Current issues)',
+                's14k-asis-1': 'Manual review of resumes and work histories takes time',
+                's14k-asis-2': 'Skill interpretation is person-dependent; mismatches happen',
+                's14k-asis-3': 'Candidate outreach becomes templated; conversion doesn’t improve',
+                's14k-asis-4': 'Market value and development guidance tend to be qualitative',
+                's14k-tobe-title': 'TO-BE (After improvement)',
+                's14k-tobe-1': 'Upload resumes → AI automatically extracts and visualizes skills',
+                's14k-tobe-2': 'Smartly match candidates to roles and prioritize recommendations',
+                's14k-tobe-3': 'Generate market value diagnosis and career suggestions semi-automatically',
+                's14k-tobe-4': 'Standardize explanations to balance speed and quality',
+                's14k-kpi-title': '📊 Quantified impact (public examples)',
+                's14k-kpi-1': 'Jobs listed',
+                's14k-kpi-2': 'Users registered',
+                's14k-kpi-3': 'Matching accuracy',
+                's14k-kpi-4': 'Avg. time to match',
+                's14k-kpi-note': '* Summarized from public information (see reference link for details)',
+                's14k-tech-title': '🔧 Technology used',
+                's14k-tech-1': 'Resume/work history information extraction',
+                's14k-tech-2': 'Skill inference & normalization',
+                's14k-tech-3': 'Recommendations',
+                's14k-tech-4': 'LLM/NLP',
+                's14k-ref': 'Reference',
+                's14k-ss-title': '🖼️ Product visuals (examples)',
+                's14k-ss-note': '* Replaceable images: put files under assets/ and update the src paths',
+                's14k-ss-cap-1': '1) Upload resume → auto skill extraction & visualization',
+                's14k-ss-cap-2': '2) Smart matching shows recommendations and priority',
+
+                // Navigation
+                'nav-prev': 'Previous',
+                'nav-next': 'Next',
+                'nav-toc': 'Table of Contents',
+                'nav-slide': 'Slide'
+            },
+            zh: {
+                // Slide 1
+                'subtitle-label': '',
+                'title': 'AI解决方案实施案例集',
+                'subtitle': 'AS-IS（现状课题）→ TO-BE（AI导入后）',
+                'tagline': '2025年实绩：12个变革实例',
+                'meta-date-label': '创建日期',
+                'meta-date': '2026年1月7日',
+                'meta-version-label': '版本',
+                'meta-version': '1.0',
+
+                // Slide 2 - TOC
+                'toc-label': '目录',
+                'toc-title': '目录',
+                'toc-sub': '点击编号可直接跳转到该章节。',
+                'toc-summary': '概要',
+                'toc-cases': '案例（AS-IS → TO-BE）',
+                'toc-case-08': '🛃 通关：CustPro（AI-OCR·HS编码）',
+                'toc-case-09': '👥 人才：KADO AI（技能解析·匹配）',
+                'toc-note-title': '操作方法',
+                'toc-note': '使用 → / ← 键或空格键移动到下一张/上一张幻灯片',
+
+                // Slide 12 - Call to Action
+                's12-badge': '⚡ AI时代的新选择',
+                's12-title1': '今天的决策，',
+                's12-title2': '决定明天的竞争力',
+                's12-subtitle': '生成式AI已不再是"考虑导入的技术"，而是进入了"不导入就承担风险的时代"',
+                's12-card1-title': '先行者优势',
+                's12-card1-text1': '现在开始的企业与1年后开始的企业之间的差距',
+                's12-card1-text2': '不是"改善"而是',
+                's12-card1-text3': '"生存"',
+                's12-card2-title': '工作方式革命',
+                's12-card2-text1': '人类专注于创造性工作，',
+                's12-card2-text2': 'AI承担重复性任务',
+                's12-card2-text3': '新的生产力形态',
+                's12-card3-title': '确实的ROI',
+                's12-card3-text1': '本资料案例证明：',
+                's12-card3-text2': '平均削减60%成本',
+                's12-card3-text3': '2-6个月见效',
+                's12-cta-title': '"总有一天做"已经来不及了',
+                's12-cta-text': 'Microsoft、SoftBank推动的AI经营革新。全球企业已经在行动。日本企业也应立即启动。',
+                's12-check1': '从小处着手，做大做强',
+                's12-check2': '风险最小化，成果最大化',
+                's12-check3': '从免费咨询开始',
+                's12-quote': '"开始的最佳时机是昨天，其次是现在。"',
+                's12-quote-author': '— 致AI时代的商业领袖',
+
+                // Slide 13 - Contact
+                's13-title': '联系我们',
+                's13-subtitle': '通过30分钟免费咨询，倾听贵公司的课题',
+                's13-company': 'Terabox Inc. テラボックス株式会社',
+                's13-division': '',
+                's13-copyright': '© 2026 Terabox Inc. テラボックス株式会社 保留所有权利。',
+
+                // Slide 13R - External References
+                's13r-title': '参考链接（真实AI应用案例）',
+                's13r-subtitle': '作为参考，列出与本资料案例（AS-IS→TO-BE）相近的“实际产品/服务”应用示例。',
+                's13r-kado-desc': '人才领域的AI应用（技能解析、智能匹配、市场价值诊断）。与本资料“人才：招聘匹配”案例相关。',
+                's13r-custpro-desc': '通关业务AI自动化（邮件处理、AI-OCR、HS编码推荐、NACCS/TradeNet输出）。与本资料“文档处理自动化/OCR/分类”类案例相关。',
+                's13r-map-title': '与本资料案例的对应关系（示例）',
+                's13r-map-1': '• 人才：招聘匹配 → KADO AI（AI技能解析·匹配）',
+                's13r-map-2': '• 文档/票据处理 → CustPro（AI-OCR·HS编码推荐）',
+                's13r-map-3': '• 业务自动化/Agent → CustPro（邮件Agent·流程自动化）',
+
+                // Slide 13 - Case 08 (CustPro)
+                's13c-title': '🛃 通关：CustPro（AI-OCR·HS编码推荐）',
+                's13c-industry-label': '行业',
+                's13c-industry': '贸易 / 通关',
+                's13c-asis-title': 'AS-IS（现状问题）',
+                's13c-asis-1': '人工打开邮件附件并进行抄录、核对',
+                's13c-asis-2': 'HS编码选择依赖个人经验，判断不一致',
+                's13c-asis-3': '向NACCS/TradeNet等系统录入/输出耗时',
+                's13c-asis-4': '旺季积压导致延误与成本上升',
+                's13c-tobe-title': 'TO-BE（改善后）',
+                's13c-tobe-1': '从邮件接收至案件建立由Agent自动处理',
+                's13c-tobe-2': '用AI-OCR将文件结构化并自动抽取必要字段',
+                's13c-tobe-3': 'AI推荐HS编码并提供依据',
+                's13c-tobe-4': '自动生成面向NACCS/TradeNet的输出数据',
+                's13c-kpi-title': '📊 量化成果',
+                's13c-kpi-1': '业务时间缩短',
+                's13c-kpi-2': '成本降低',
+                's13c-kpi-3': 'AI-OCR精度',
+                's13c-kpi-4': '平均处理时间',
+                's13c-kpi-note': '※ 基于公开信息的要点汇总（详情见参考链接）',
+                's13c-tech-title': '🔧 采用技术',
+                's13c-tech-1': 'AI-OCR',
+                's13c-tech-2': 'HS编码推荐（分类）',
+                's13c-tech-3': '邮件Agent',
+                's13c-tech-4': '业务流程自动化',
+                's13c-tech-5': '外部系统对接（NACCS/TradeNet）',
+                's13c-ref': '参考',
+                's13c-ss-title': '🖼️ 产品效果图（示例）',
+                's13c-ss-note': '※ 图片可替换：请放到 assets/ 目录下并更新 src 路径',
+                's13c-ss-cap-1': '① 邮件接收→案件建立（Agent）自动分流',
+                's13c-ss-cap-2': '② AI-OCR抽取→HS编码推荐→输出流程',
+
+                // Slide 14 - Case 09 (KADO AI)
+                's14k-title': '👥 人才：KADO AI（技能解析·智能匹配）',
+                's14k-industry-label': '行业',
+                's14k-industry': '招聘 / HR',
+                's14k-asis-title': 'AS-IS（现状问题）',
+                's14k-asis-1': '简历/经历的筛选依赖人工，耗时较长',
+                's14k-asis-2': '技能解读依赖个人经验，容易产生错配',
+                's14k-asis-3': '候选人沟通较模板化，转化提升有限',
+                's14k-asis-4': '市场价值与培养建议往往偏定性',
+                's14k-tobe-title': 'TO-BE（改善后）',
+                's14k-tobe-1': '上传简历→AI自动抽取并可视化技能',
+                's14k-tobe-2': '候选人与岗位智能匹配并排序推荐',
+                's14k-tobe-3': '半自动生成市场价值诊断与职业建议',
+                's14k-tobe-4': '标准化说明，实现速度与质量兼顾',
+                's14k-kpi-title': '📊 量化成果（公开信息例）',
+                's14k-kpi-1': '发布职位',
+                's14k-kpi-2': '注册用户',
+                's14k-kpi-3': '匹配精度',
+                's14k-kpi-4': '平均匹配周期',
+                's14k-kpi-note': '※ 基于公开信息的要点汇总（详情见参考链接）',
+                's14k-tech-title': '🔧 采用技术',
+                's14k-tech-1': '简历/经历信息抽取',
+                's14k-tech-2': '技能推断与标准化',
+                's14k-tech-3': '推荐（Recommender）',
+                's14k-tech-4': 'LLM/自然语言处理',
+                's14k-ref': '参考',
+                's14k-ss-title': '🖼️ 产品效果图（示例）',
+                's14k-ss-note': '※ 图片可替换：请放到 assets/ 目录下并更新 src 路径',
+                's14k-ss-cap-1': '① 上传简历→自动抽取并可视化技能',
+                's14k-ss-cap-2': '② 智能匹配给出推荐与优先级',
+
+                // Slide 3 - Summary
+                's3-label': '摘要',
+                's3-title': '2025年 导入实绩总结',
+                's3-subtitle': '12个项目验证的变革效果',
+                's3-stat1': '导入项目数',
+                's3-stat2': '对应行业',
+                's3-stat3': '平均导入期间',
+                's3-stat4': '最高精度达成',
+                's3-benefit1-title': '成本削减效果',
+                's3-benefit1-item1': '人工费：50-70%削减',
+                's3-benefit1-item2': '运营成本：40-60%削减',
+                's3-benefit1-item3': '处理成本：大幅削减',
+                's3-benefit2-title': '效率提升效果',
+                's3-benefit2-item1': '处理速度：10-15倍加快',
+                's3-benefit2-item2': '业务时间：70-90%缩短',
+                's3-benefit2-item3': '实现24小时运转',
+                's3-benefit3-title': '质量提升效果',
+                's3-benefit3-item1': '精度：90-99%达成',
+                's3-benefit3-item2': '错误：80-95%削减',
+                's3-benefit3-item3': '质量标准化：100%',
+
+                // Slide 4 - Industry Map
+                's4-label': '行业地图',
+                's4-title': '行业别成果地图',
+                's4-subtitle': '成本削减 × 效率提升全景',
+
+                // Navigation
+                'nav-prev': '上一页',
+                'nav-next': '下一页',
+                'nav-toc': '目录',
+                'nav-slide': '幻灯片'
+            }
+        };
+
+        function switchLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.textContent = t[key];
+                }
+            });
+
+            // Update navigation buttons
+            if (prevBtn && t['nav-prev']) prevBtn.textContent = t['nav-prev'];
+            if (nextBtn && t['nav-next']) nextBtn.textContent = t['nav-next'];
+            const tocBtn = document.getElementById('toc-btn');
+            if (tocBtn && t['nav-toc']) tocBtn.textContent = t['nav-toc'];
+        }
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const lang = btn.dataset.lang;
+                switchLanguage(lang);
+                console.log('Language switched to:', lang);
+            });
+        });
+
+        // -----------------------------
+        // Lightbox (image viewer)
+        // -----------------------------
+        const lightboxEl = document.getElementById('lightbox');
+        const lightboxBackdropEl = document.getElementById('lightbox-backdrop');
+        const lightboxCloseEl = document.getElementById('lightbox-close');
+        const lightboxPrevEl = document.getElementById('lightbox-prev');
+        const lightboxNextEl = document.getElementById('lightbox-next');
+        const lightboxTrackEl = document.getElementById('lightbox-track');
+        const lightboxCaptionEl = document.getElementById('lightbox-caption');
+        const lightboxCounterEl = document.getElementById('lightbox-counter');
+        const lightboxThumbsEl = document.getElementById('lightbox-thumbs');
+
+        let lightboxOpen = false;
+        let lightboxGroup = '';
+        let lightboxItems = []; // { src, alt, caption }
+        let lightboxIndex = 0;
+        let lightboxTouchStartX = null;
+        let lightboxTouchStartY = null;
+        let lightboxTouching = false;
+        // pointer / mouse drag
+        let pointerDown = false;
+        let pointerStartX = null;
+        let pointerPointerId = null;
+        let pointerDeltaX = 0;
+
+        function buildLightboxGroups() {
+            /** @type {Record<string, Array<{src: string, alt: string, caption: string}>>} */
+            const groups = {};
+            document.querySelectorAll('.lightbox-img').forEach(img => {
+                const group = img.getAttribute('data-lightbox-group') || 'default';
+                const index = parseInt(img.getAttribute('data-lightbox-index') || '0', 10);
+                const captionEl = img.closest('figure')?.querySelector('figcaption');
+                const caption = captionEl ? captionEl.textContent.trim() : '';
+
+                if (!groups[group]) groups[group] = [];
+                groups[group][index] = {
+                    src: img.getAttribute('src') || '',
+                    alt: img.getAttribute('alt') || '',
+                    caption
+                };
+            });
+
+            // Compact sparse arrays just in case.
+            Object.keys(groups).forEach(g => {
+                groups[g] = groups[g].filter(Boolean);
+            });
+            return groups;
+        }
+
+        let LIGHTBOX_GROUPS = buildLightboxGroups();
+
+        function renderLightboxTrack() {
+            lightboxTrackEl.innerHTML = '';
+            lightboxItems.forEach(item => {
+                const slide = document.createElement('div');
+                slide.className = 'w-full shrink-0 flex items-center justify-center';
+                slide.style.width = '100%';
+
+                const img = document.createElement('img');
+                img.src = item.src;
+                img.alt = item.alt;
+                img.className = 'max-h-[80vh] w-auto max-w-full object-contain select-none';
+                img.draggable = false;
+                slide.appendChild(img);
+                lightboxTrackEl.appendChild(slide);
+            });
+            renderLightboxThumbs();
+        }
+
+        function updateLightboxUI() {
+            // Translate track
+            const offset = -100 * lightboxIndex;
+            lightboxTrackEl.style.transform = `translateX(${offset}%)`;
+
+            // Caption/Counter
+            const current = lightboxItems[lightboxIndex];
+            lightboxCaptionEl.textContent = current?.caption || current?.alt || '';
+            lightboxCounterEl.textContent = `${lightboxIndex + 1} / ${lightboxItems.length}`;
+
+            // Controls
+            const canPrev = lightboxIndex > 0;
+            const canNext = lightboxIndex < lightboxItems.length - 1;
+            lightboxPrevEl.disabled = !canPrev;
+            lightboxNextEl.disabled = !canNext;
+            lightboxPrevEl.classList.toggle('opacity-30', !canPrev);
+            lightboxPrevEl.classList.toggle('cursor-not-allowed', !canPrev);
+            lightboxNextEl.classList.toggle('opacity-30', !canNext);
+            lightboxNextEl.classList.toggle('cursor-not-allowed', !canNext);
+        }
+
+        function renderLightboxThumbs() {
+            if (!lightboxThumbsEl) return;
+            lightboxThumbsEl.innerHTML = '';
+            lightboxItems.forEach((item, i) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'rounded-md overflow-hidden border border-transparent focus:outline-none';
+                btn.setAttribute('data-thumb-index', String(i));
+
+                const img = document.createElement('img');
+                img.src = item.src;
+                img.alt = item.alt;
+                img.className = 'w-20 h-12 object-cover';
+                img.draggable = false;
+                btn.appendChild(img);
+
+                btn.addEventListener('click', () => {
+                    lightboxIndex = i;
+                    updateLightboxUI();
+                });
+
+                lightboxThumbsEl.appendChild(btn);
+            });
+            highlightActiveThumb();
+        }
+
+        function highlightActiveThumb() {
+            if (!lightboxThumbsEl) return;
+            Array.from(lightboxThumbsEl.children).forEach((btn, i) => {
+                btn.classList.toggle('ring-2', i === lightboxIndex);
+                btn.classList.toggle('ring-white', i === lightboxIndex);
+            });
+        }
+
+        function openLightbox(group, index = 0) {
+            LIGHTBOX_GROUPS = buildLightboxGroups(); // in case DOM text changed (i18n) or images swapped
+
+            lightboxGroup = group;
+            lightboxItems = LIGHTBOX_GROUPS[group] || [];
+            if (!lightboxItems.length) return;
+
+            lightboxIndex = Math.min(Math.max(index, 0), lightboxItems.length - 1);
+
+            renderLightboxTrack();
+            updateLightboxUI();
+
+            lightboxEl.classList.remove('hidden');
+            lightboxEl.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            lightboxOpen = true;
+        }
+
+        function closeLightbox() {
+            if (!lightboxOpen) return;
+            lightboxEl.classList.add('hidden');
+            lightboxEl.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            lightboxOpen = false;
+        }
+
+        function lightboxPrev() {
+            if (!lightboxOpen) return;
+            if (lightboxIndex <= 0) return;
+            lightboxIndex -= 1;
+            updateLightboxUI();
+        }
+
+        function lightboxNext() {
+            if (!lightboxOpen) return;
+            if (lightboxIndex >= lightboxItems.length - 1) return;
+            lightboxIndex += 1;
+            updateLightboxUI();
+        }
+
+        // Click to open
+        document.addEventListener('click', (e) => {
+            const img = e.target?.closest?.('.lightbox-img');
+            if (!img) return;
+            const group = img.getAttribute('data-lightbox-group') || 'default';
+            const index = parseInt(img.getAttribute('data-lightbox-index') || '0', 10);
+            openLightbox(group, index);
+        });
+
+        // Controls
+        lightboxBackdropEl?.addEventListener('click', closeLightbox);
+        lightboxCloseEl?.addEventListener('click', closeLightbox);
+        // Fallback binding in case addEventListener didn't attach in some environments
+        if (lightboxCloseEl) lightboxCloseEl.onclick = closeLightbox;
+        lightboxPrevEl?.addEventListener('click', lightboxPrev);
+        lightboxNextEl?.addEventListener('click', lightboxNext);
+
+        // Keyboard navigation (only when lightbox is open)
+        document.addEventListener('keydown', (e) => {
+            if (!lightboxOpen) return;
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeLightbox();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                lightboxPrev();
+            } else if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                lightboxNext();
+            }
+        }, true);
+
+        // Touch swipe (mobile)
+        const viewportEl = document.getElementById('lightbox-viewport');
+        viewportEl?.addEventListener('touchstart', (e) => {
+            if (!lightboxOpen) return;
+            if (e.touches.length !== 1) return;
+            lightboxTouching = true;
+            lightboxTouchStartX = e.touches[0].clientX;
+            lightboxTouchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        viewportEl?.addEventListener('touchmove', (e) => {
+            if (!lightboxOpen || !lightboxTouching) return;
+            if (e.touches.length !== 1) return;
+            const dx = e.touches[0].clientX - (lightboxTouchStartX ?? 0);
+            const dy = e.touches[0].clientY - (lightboxTouchStartY ?? 0);
+            // If horizontal swipe, prevent browser from scrolling the viewport
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        viewportEl?.addEventListener('touchend', (e) => {
+            if (!lightboxOpen || !lightboxTouching) return;
+            lightboxTouching = false;
+
+            const endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : null;
+            if (endX == null || lightboxTouchStartX == null) return;
+
+            const dx = endX - lightboxTouchStartX;
+            const threshold = 40;
+            if (dx > threshold) {
+                lightboxPrev();
+            } else if (dx < -threshold) {
+                lightboxNext();
+            }
+            lightboxTouchStartX = null;
+            lightboxTouchStartY = null;
+        }, { passive: true });
+
+        // -----------------------------
+        // Pointer (mouse) drag support
+        // -----------------------------
+        viewportEl?.addEventListener('pointerdown', (e) => {
+            if (!lightboxOpen) return;
+            pointerDown = true;
+            pointerStartX = e.clientX;
+            pointerPointerId = e.pointerId;
+            pointerDeltaX = 0;
+            try { viewportEl.setPointerCapture(e.pointerId); } catch (err) { }
+        }, { passive: true });
+
+        viewportEl?.addEventListener('pointermove', (e) => {
+            if (!lightboxOpen || !pointerDown) return;
+            pointerDeltaX = e.clientX - (pointerStartX || 0);
+            // prevent accidental text selection during drag
+            if (Math.abs(pointerDeltaX) > 5) e.preventDefault();
+        }, { passive: false });
+
+        viewportEl?.addEventListener('pointerup', (e) => {
+            if (!lightboxOpen || !pointerDown) return;
+            pointerDown = false;
+            try { viewportEl.releasePointerCapture(pointerPointerId); } catch (err) { }
+            const dx = pointerDeltaX || 0;
+            const threshold = 50;
+            if (dx > threshold) {
+                lightboxPrev();
+            } else if (dx < -threshold) {
+                lightboxNext();
+            }
+            pointerStartX = null;
+            pointerDeltaX = 0;
+        }, { passive: true });
+
+        viewportEl?.addEventListener('pointercancel', (e) => {
+            pointerDown = false; pointerStartX = null; pointerDeltaX = 0;
+        }, { passive: true });
+
+        // Keep thumb highlight updated when UI changes
+        const origUpdate = updateLightboxUI;
+        updateLightboxUI = function () {
+            origUpdate();
+            highlightActiveThumb();
+        };
+
+        // -----------------------------
+        // Side panel thumbnail hover preview
+        // -----------------------------
+        const thumbPreview = document.getElementById('ss-thumb-preview');
+        const thumbPreviewImg = document.getElementById('ss-thumb-preview-img');
+        const thumbPreviewCap = document.getElementById('ss-thumb-preview-cap');
+
+        function showThumbPreview(src, cap, clientX, clientY) {
+            if (!thumbPreview) return;
+            thumbPreviewImg.src = src;
+            thumbPreviewCap.textContent = cap || '';
+            // position to the left of the cursor but keep inside viewport
+            const padding = 12;
+            const previewW = 224; // approx width
+            let left = clientX - previewW - 24; // prefer left side
+            if (left < 8) left = clientX + 16; // if too left, show on right
+            let top = clientY - 40;
+            if (top < 8) top = 8;
+            thumbPreview.style.left = left + 'px';
+            thumbPreview.style.top = top + 'px';
+            thumbPreview.classList.remove('hidden');
+        }
+
+        function hideThumbPreview() {
+            if (!thumbPreview) return;
+            thumbPreview.classList.add('hidden');
+        }
+
+        document.querySelectorAll('.ss-panel-thumb-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', (e) => {
+                const img = btn.querySelector('img');
+                if (!img) return;
+                const src = img.getAttribute('src');
+                const fig = btn.closest('section')?.querySelector('.ss-anchor figcaption');
+                const cap = fig ? fig.textContent.trim() : img.getAttribute('alt') || '';
+                showThumbPreview(src, cap, e.clientX, e.clientY);
+            });
+            btn.addEventListener('mousemove', (e) => {
+                if (!thumbPreview || thumbPreview.classList.contains('hidden')) return;
+                // update position while moving
+                showThumbPreview(thumbPreviewImg.src, thumbPreviewCap.textContent, e.clientX, e.clientY);
+            });
+            btn.addEventListener('mouseleave', hideThumbPreview);
+        });
+    </script>
+
+</body>
+
+</html>
