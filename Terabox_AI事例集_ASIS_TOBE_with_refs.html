@@ -16,12 +16,12 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
+            overflow: auto;
         }
 
         #presentation-container {
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -32,10 +32,10 @@
             min-height: 100vh;
             width: 100%;
             box-sizing: border-box;
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: relative;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
             transition: opacity 0.4s ease-in-out;
             /* Reserve space for the fixed bottom navigation (updated dynamically via JS).
                Fallback keeps content usable even if JS doesn't run. */
@@ -199,7 +199,7 @@
 
                 <h1 class="text-4xl md:text-6xl font-extrabold mb-6" data-i18n="title">AIソリューション導入事例集</h1>
                 <p class="text-xl md:text-3xl font-light opacity-90" data-i18n="subtitle">AS-IS（現状課題）→ TO-BE（AI導入後）</p>
-                <p class="text-lg mt-8 opacity-80" data-i18n="tagline">2025年実績：12案件の変革実例</p>
+                <p class="text-lg mt-8 opacity-80" data-i18n="tagline">2025年実績：12案件のうち10案件を抜粋紹介</p>
 
                 <div class="mt-10 flex flex-wrap justify-center gap-3 text-sm">
                     <span class="pill"><span data-i18n="meta-date-label">作成日</span>：<span
@@ -241,6 +241,7 @@
                                     通関：CustPro（AI-OCR・HSコード）</a></li>
                             <li><a class="toc-link" href="#" data-goto="12" data-i18n="toc-case-09">👥 人材：KADO
                                     AI（スキル解析・マッチング）</a></li>
+                <li><a class="toc-link" href="#" data-goto="13">🏗 建設：AI外装デザイン最適化</a></li>
                         </ol>
                     </div>
                 </div>
@@ -1588,6 +1589,169 @@
             </div>
         </section>
 
+        <!-- Slide 14: Case 10 - Construction Design Optimization -->
+        <section class="slide bg-white">
+            <div class="max-w-6xl mx-auto px-6 py-16 w-full">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">CASE 10</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mt-2">🏗 建設：AI外装デザイン最適化（インテリジェントエージェント）</h2>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-semibold">業界</span>：<span>建設・建築設計</span>
+                    </div>
+                </div>
+
+                <div class="mt-10 comparison-grid">
+                    <div class="asis-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-red-600 mb-4">AS-IS（現状課題）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>配置図・要望・参考画像が分散し、整理に時間がかかる</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>外装・景観の参考収集と比較が人手で非効率</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>パースと概算が反復作業になり、設計リードタイムが長期化</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-red-500 font-bold">✗</span>
+                                <span>修正が増えるほど、設計と見積の整合が取りづらい</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow-box">→</div>
+
+                    <div class="tobe-box p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-green-600 mb-4">TO-BE（改善後）</h3>
+                        <ul class="space-y-3">
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>配置図と希望イメージ入力で、AIが意図を整理し検索条件を最適化</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>マルチモーダル検索とRAGで外装素材・参考事例を即時提示</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>AIが複数のデザイン案（パース・図面・概算）を自動生成</span>
+                            </li>
+                            <li class="reveal-item flex items-start gap-2">
+                                <span class="text-green-500 font-bold">✓</span>
+                                <span>フィードバックを反映して最適化し、最終設計図と見積を一括出力</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                        <h3 class="text-xl font-bold text-blue-900">📊 想定効果（PoC試算）</h3>
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">60%</div>
+                                <div class="text-sm text-gray-600 mt-1">設計リードタイム短縮</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-600">40%</div>
+                                <div class="text-sm text-gray-600 mt-1">修正回数削減</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-blue-600">1時間</div>
+                                <div class="text-sm text-gray-600 mt-1">概算作成時間</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-purple-600">3案/回</div>
+                                <div class="text-sm text-gray-600 mt-1">提案バリエーション</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-blue-200 text-sm text-gray-600">※ PoCでの想定効果（条件により変動）</div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-amber-50 border border-amber-100">
+                        <h3 class="text-xl font-bold text-amber-900">🔧 採用技術</h3>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">マルチモーダル検索</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">RAG知識ベース</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">画像生成（設計パース）</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">プロンプト最適化</span>
+                            <span class="px-3 py-1 bg-white rounded-full text-sm border border-amber-200">概算見積自動化</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-amber-200">
+                            <div class="text-sm text-gray-600">🔗 参照：設計PoCデモ（社内）</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Placeholder visuals for Case 10 -->
+                <div class="hidden" aria-hidden="true">
+                    <img class="lightbox-img" data-lightbox-group="construction" data-lightbox-index="0"
+                        src="assets/Construction1.jpg" alt="建設AIデザイン - 参考イメージ" />
+                    <img class="lightbox-img" data-lightbox-group="construction" data-lightbox-index="1"
+                        src="assets/Construction5.jpg" alt="建設AIデザイン - 平面図" />
+                    <img class="lightbox-img" data-lightbox-group="construction" data-lightbox-index="2"
+                        src="assets/Construction2.jpg" alt="建設AIデザイン - AI生成案" />
+                    <img class="lightbox-img" data-lightbox-group="construction" data-lightbox-index="3"
+                        src="assets/Construction3.jpg" alt="建設AIデザイン - 入力情報" />
+                    <img class="lightbox-img" data-lightbox-group="construction" data-lightbox-index="4"
+                        src="assets/Construction4.jpg" alt="建設AIデザイン - 業務入力" />
+                    <img class="lightbox-img" data-lightbox-group="construction" data-lightbox-index="5"
+                        src="assets/Construction6.jpg" alt="建設AIデザイン - Day AI" />
+                    <img class="lightbox-img" data-lightbox-group="construction" data-lightbox-index="6"
+                        src="assets/Construction7.jpg" alt="建設AIデザイン - Construction AI" />
+                </div>
+
+                <!-- Right-side floating panel: quick access to product images (visible on lg+) -->
+                <div class="hidden lg:flex flex-col items-center gap-3 absolute top-24 right-8 z-40">
+                    <button type="button" onclick="openLightbox('construction',0)"
+                        class="px-4 py-3 bg-emerald-500 text-white rounded-xl shadow-lg hover:bg-emerald-600 transition-all">効果図を見る</button>
+                    <div class="flex flex-col gap-2 bg-white/5 p-2 rounded-lg border border-white/10">
+                        <button type="button" onclick="openLightbox('construction',0)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/Construction1.jpg" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                        <button type="button" onclick="openLightbox('construction',1)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/Construction5.jpg" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                        <button type="button" onclick="openLightbox('construction',2)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/Construction2.jpg" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                        <button type="button" onclick="openLightbox('construction',3)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/Construction3.jpg" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                        <button type="button" onclick="openLightbox('construction',4)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/Construction4.jpg" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                        <button type="button" onclick="openLightbox('construction',5)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/Construction6.jpg" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                        <button type="button" onclick="openLightbox('construction',6)"
+                            class="w-28 h-16 overflow-hidden rounded-md ss-panel-thumb-btn">
+                            <img src="assets/Construction7.jpg" alt="thumb" class="w-full h-full object-cover"
+                                draggable="false" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Lightbox (Image Viewer) -->
         <div id="lightbox" class="fixed inset-0 z-[1000] hidden" aria-hidden="true">
             <div id="lightbox-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
@@ -1637,9 +1801,9 @@
             <div id="ss-thumb-preview-cap" class="mt-2 text-sm text-slate-700 truncate"></div>
         </div>
 
-        <!-- Slide 14: Call to Action - AI時代への行動 (Moved to end) -->
+    <!-- Slide 15: Call to Action - AI時代への行動 (Moved to end) -->
         <section class="slide bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 text-white">
-            <div class="max-w-5xl mx-auto px-6 pt-12 pb-40 text-center">
+            <div class="max-w-5xl mx-auto px-6 pt-10 pb-24 text-center">
                 <div
                     class="mb-6 inline-block border border-yellow-400/50 rounded-full px-6 py-2 bg-yellow-400/10 backdrop-blur-sm">
                     <p class="text-sm md:text-base font-bold tracking-wide text-yellow-300" data-i18n="s12-badge">
@@ -1659,7 +1823,7 @@
                     「導入しないリスクを抱える時代」へ
                 </p>
 
-                <div class="grid md:grid-cols-3 gap-6 mt-12 mb-12">
+                <div class="grid md:grid-cols-3 gap-6 mt-8 mb-8">
                     <div
                         class="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                         <div class="text-5xl mb-4">🚀</div>
@@ -1696,7 +1860,7 @@
                 </div>
 
                 <div
-                    class="mt-10 p-8 rounded-3xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-2 border-blue-400/30 backdrop-blur-sm mb-32">
+                    class="mt-8 p-7 rounded-3xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-2 border-blue-400/30 backdrop-blur-sm mb-16">
                     <p class="text-2xl md:text-3xl font-bold mb-4 text-yellow-300" data-i18n="s12-cta-title">
                         「いつかやる」は、もう間に合わない
                     </p>
@@ -1721,7 +1885,7 @@
                     </div>
                 </div>
 
-                <div class="mt-8 pb-24 text-lg md:text-xl opacity-80 italic">
+                <div class="mt-6 pb-10 text-lg md:text-xl opacity-80 italic">
                     <span data-i18n="s12-quote">"The best time to start was yesterday. The second best time is
                         now."</span><br />
                     <span class="text-sm mt-2 block opacity-60" data-i18n="s12-quote-author">— AI時代のビジネスリーダーへ</span>
@@ -1729,7 +1893,7 @@
             </div>
         </section>
 
-        <!-- Slide 15: References (External) -->
+    <!-- Slide 16: References (External) -->
         <section class="slide bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white">
             <div class="max-w-5xl mx-auto px-6 py-18 text-center pt-12">
                 <h2 class="text-4xl md:text-5xl font-bold mb-6" data-i18n="s13r-title">参考リンク（実際のAI活用事例）</h2>
@@ -1950,7 +2114,7 @@
                 'subtitle-label': '',
                 'title': 'AIソリューション導入事例集',
                 'subtitle': 'AS-IS（現状課題）→ TO-BE（AI導入後）',
-                'tagline': '2025年実績：12案件の変革実例',
+                'tagline': '2025年実績：12案件のうち10案件を抜粋紹介',
                 'meta-date-label': '作成日',
                 'meta-date': '2026年1月7日',
                 'meta-version-label': '版',
@@ -2108,7 +2272,7 @@
                 'subtitle-label': '',
                 'title': 'AI Solution Implementation Case Studies',
                 'subtitle': 'AS-IS (Current Issues) → TO-BE (After AI Implementation)',
-                'tagline': '2025 Results: 12 Transformation Examples',
+                'tagline': '2025 Results: 10 featured cases out of 12',
                 'meta-date-label': 'Created',
                 'meta-date': 'January 7, 2026',
                 'meta-version-label': 'Version',
@@ -2267,7 +2431,7 @@
                 'subtitle-label': '',
                 'title': 'AI解决方案实施案例集',
                 'subtitle': 'AS-IS（现状课题）→ TO-BE（AI导入后）',
-                'tagline': '2025年实绩：12个变革实例',
+                'tagline': '2025年实绩：12个案例中精选10个',
                 'meta-date-label': '创建日期',
                 'meta-date': '2026年1月7日',
                 'meta-version-label': '版本',
